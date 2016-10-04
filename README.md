@@ -4,6 +4,10 @@ This is the final project of the [Visual Analytics course](http://johnguerra.co/
 
 This project aims to solve a real problem through a visual analytics application. 
 
+## Project definition
+
+Along this project we will be working with Recaudo Bogotá S.A.S. 
+
 ## Data Characterization
 
 We have access to 5 different datasets. 
