@@ -10,15 +10,17 @@ Along this project we will be working with Recaudo Bogotá S.A.S.
 
 ## Data Characterization
 
-We have access to 5 different datasets. 
- 1. Recharge data: This dataset is a **table**. Each item in the table has 6 different attributes: 4 **ordered** (card id, recharging point id, value and route) and 2 **categorical** (direction: inbound or outbound, and type of card: personalized, subsidized).
- 2. Ticket stamping: This dataset is a **table**. Each item in the table has  
+We have access to 3 different datasets. 
+ 1. Ticket stamping: This dataset is a **table**. Each item in the table has 3 **ordered** attributes (card id, TM station id, timestamp) and 1 **categorical** attribute (type of card: personalized, subsidized, ...). 
+ 2. Amount of times the gate is crossed for leaving the station each 15 minutes: This dataset is a **table**. Each item in the table has 3 **ordered** attributes (amount of occurrences, timestamp and TM station id). 
+ 3. TM Station's location: This is a **spacial** dataset. Each item has a **geometry** attribute and an **ordered** attribute that represents the TM station id. 
  
 
 ## First Solution Approach
 
-T1. Critical inbound and outbound routes in an specific range of time (rush and free hours) having as origin and destination a TM Station.
-T2. Critical TM Stations dpeending on the amount of people entering during rush hours.
+- T1. Critical inbound and outbound routes in an specific range of time (rush and free hours) having as origin and destination a TM Station.
+- T2. Critical TM Stations dpeending on the amount of people entering during rush hours.
+- T3. 
 
 ## References
 
