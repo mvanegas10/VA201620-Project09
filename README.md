@@ -2,9 +2,14 @@
 
 This is the final project of the [Visual Analytics course](http://johnguerra.co/classes/isis_4822_fall_2016/) in [Universidad de los Andes](http://www.uniandes.edu.co/).
 
-It aims to solve a real problem through a visual analytics application, considering a real client.  
+This project aims to solve a real problem through a visual analytics application. 
 
 ## Data Characterization
+
+We have access to 5 different datasets. 
+ 1. Recharge data: This dataset is a **table**. Each item in the table has 6 different attributes: 4 **ordered** (card id, recharging point id, value and route) and 2 **categorical** (direction: inbound or outbound, and type of card: personalized, subsidized).
+ 2. Ticket stamping: This dataset is a **table**. Each item in the table has  
+ 
 
 ## First Solution Approach
 
