@@ -6,7 +6,7 @@ This project aims to solve a real problem through a visual analytics application
 
 ## Project definition
 
-Along this project we will be working with Recaudo Bogotá S.A.S. This enterprise won the pledge for operating 'Sistema de Recaudo' during 17 years. Their mission is to give Bogotá citizens an intelligent and quality transportation service, trying to improve their quality life. 
+Along this project we will be working with Recaudo Bogotá S.A.S. This enterprise won the pledge for operating 'Sistema de Recaudo' during 17 years. Their mission is to give Bogota citizens an intelligent and quality transportation service, trying to improve their quality life. 
 This business is focused on the different services that a variety of cards offer:
 - Basic card: The user is nos identified and does not offer any other service beside the opportunity to use the public transport.
 - Plus card: It has the name and identification of the user and gives them the option to have discount on transfer.
@@ -34,9 +34,9 @@ We identified 4 different tasks:
 ![Mockup](docs/mockup.png)
 
 ## References
-This is [an example](http://example.com/ "Title") inline link.
-[id]: http://example.com/  "Optional Title Here"
-
+- Recaudo Bogota: Negocio. [Available here](http://conexion.recaudobogota.com/content/negocio).
+- IDECA: Portal Mapas. [Available here](http://mapas.bogota.gov.co/portalmapas/).
+- Google Transit. [Available here](https://www.google.com/maps?saddr=Calle+185%2C+Bogot%C3%A1%2C+Colombia&daddr=Universidad+de+los+Andes+-+edificio+Mario+Laserna%2C+Bogot%C3%A1%2C+Colombia&ie=UTF8&f=d&sort=def&dirflg=r&hl=en).
 
 ## Contributors
 <!-- Contributors table START -->
