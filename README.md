@@ -17,6 +17,9 @@ We have access to 5 different datasets.
 
 ## First Solution Approach
 
+T1. Critical inbound and outbound routes in an specific range of time (rush and free hours) having as origin and destination a TM Station.
+T2. Critical TM Stations dpeending on the amount of people entering during rush hours.
+
 ## References
 
 ## Contributors
