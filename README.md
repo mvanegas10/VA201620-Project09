@@ -14,20 +14,29 @@ This business is focused on the different services that a variety of cards offer
 
 ## Data Characterization
 
-We have access to 3 different datasets. 
+We have access to 3 different datasets:
  1. Ticket stamping: This dataset is a **table**. Each item in the table has 3 **ordered** attributes (card id, TM station id, timestamp) and 1 **categorical** attribute (type of card: personalized, subsidized, ...). 
  2. Amount of times the gate is crossed for leaving the station each 15 minutes: This dataset is a **table**. Each item in the table has 3 **ordered** attributes (amount of occurrences, timestamp and TM station id). 
  3. TM Station's location: This is a **spacial** dataset. Each item has a **geometry** attribute and an **ordered** attribute that represents the TM station id. 
  
-- T1. **Discover trends** in trajectories showing critical inbound and outbound in those, during specific ranges of time (rush and free hours) having as origin and destination a TM Station.
+We identified 4 different tasks:
+ 
+- T1. **Discover trends** in trajectories showing critical inbound and outbound routes, during specific ranges of time (rush and free hours) having as origin and destination a TM Station.
 - T2. **Identify extremes** presenting critical TM Stations depending on the amount of people entering during rush hours.
 - T3. **Derive** the behaviour of TM users and their usual trajectories taking into account the id card and its usage in the system.
 - T4. **Compare** the **distribution** of inbound and outbound trajectories during the days of the week. 
  
 ## First Solution Approach
 
+- For T1 we are going to map arrows over the city with different colors for representing rush and free hours, and it will have luminance for expressing the critical level.
+
+# Mockup
+![Mockup](docs/mockup.png)
 
 ## References
+This is [an example](http://example.com/ "Title") inline link.
+[id]: http://example.com/  "Optional Title Here"
+
 
 ## Contributors
 <!-- Contributors table START -->
