@@ -26,7 +26,10 @@ We identified 4 different tasks:
  
 ## First Solution Approach
 
-- For T1 we are going to map arrows over the city with different colors for representing rush and free hours, and it will have luminance for expressing the critical level.
+- For T1 and T3 we are going to **map shapes** using arrows over the city with different **colors** for representing the categories: rush and free hours, and it will have **luminance** for expressing the critical level.
+- For T2 we are going to **map shapes** using circles over the point where the station is located, for **mapping** the ordered attribute of critical level we are going to use **size** of the circle. 
+- For T4 we are going to have a new visualization, it will have two graphs for inbound and outbound trajectories, **arrange** the data **ordering** from the day of the week and using this regions on the horizontal axis. On the other hand, **map shapes** for the amount of incomes and outcomes of all the system with the position on the vertical axis. Finally, for making possible the comparisson of two different weeks, we will **map** the shapes with and specific **color hue** for representing the week.
+- For T4 it will be possible to **manipulate** the graphs of the second visualization using the **selection** of an specific station from the first visualization, to update the graphs for the amount of incomes and outcomes of that station.
 
 # Mockup
 ![Mockup](docs/mockup.png)
