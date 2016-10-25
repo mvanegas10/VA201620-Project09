@@ -14,8 +14,8 @@ This business is focused on the different services that a variety of cards offer
 
 We have access to 2 different datasets:
 
-- Incident ticket information: This dataset is a table. Each item in the table has 5 ordered attributes (initial timestamp, final timestamp, priority, firstResponse, busNumber) and 9 categorical attribute (state, inCharge, proprietary, clientName, service, type,station, yard, typeOfFailure).
-- Buses information: This dataset is a table. Each item in the table has 2 ordered attributes (busId, yearBeginWorking) and 3 categorical attribute (idEquipmentOnBoard, yearEquipmentOnBoard, stateEquipmentOnBoard).
+- Incident ticket information: This dataset is a **table**. Each item in the table has 5 **ordered attributes** (initial timestamp, final timestamp, priority, firstResponse, busNumber) and 9 **categorical attributes** (state, inCharge, proprietary, clientName, service, type,station, yard, typeOfFailure).
+- Buses information: This dataset is a **table**. Each item in the table has 2 **ordered attributes** (busId, yearBeginWorking) and 3 **categorical attribute** (idEquipmentOnBoard, yearEquipmentOnBoard, stateEquipmentOnBoard).
  
  
 We identified 6 different tasks:
