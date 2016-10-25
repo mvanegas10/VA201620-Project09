@@ -36,6 +36,8 @@ For all tasks it is necessary to have in mind that in every moment the user can 
 - On the other hand, for <ins>T5</ins> we are using a line chart, the user will select a maximum of 5 tickets from the scatterplot. We will use the categorical attribute state of the ticket, on the x axis it will be **aligned, separated and ordered**. Also, we will use the **vertical position** of the line to represent the time that took a ticket on that state. Finally, there is going to be a line for each ticket and are going to be differentiated by **color hue**.
 - Finally, for <ins>T6</ins> we will use a table and single horizontal bar. The table will present the principal information of the selected ticket  like: the operator, the type of incident, dates (initial and final). And the single bar chart will be used to represent the total delay. The **length** will be the principal channel, representing the total delay and the different states of the incident will be represented by the **color hue**.  For this task all the states will be represented, but the states that are no chosen by the user will be colored grey.
 
+## Mockup
+[Mockup](docs/mockup.png)
 
 ## References
 - Recaudo Bogota: Negocio. [Available here](http://conexion.recaudobogota.com/content/negocio).
