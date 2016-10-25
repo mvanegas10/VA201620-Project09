@@ -23,7 +23,10 @@ function stackedBarChart(columnsData) {
                 categories: tiposIncidentes
             },
             y: {
-                label: 'Tiempo de atención (en días)'
+                label: 'Tiempo de atención (en días)',
+                tick: {
+                    format: function (x) { return (x/1000000000000) + " b"; }
+                }                
             }
         },
         legend: {
@@ -65,6 +68,7 @@ d3.csv("/data/diciembre2015.csv", function(err, data) {
         tempInd[item.Tipos] = true;
         tempEst[item.Estado] = true;
         var tiempo = timeDifference(new Date(item.Creado.substring(0,item.Creado.indexOf(' '))), new Date(item.Cerrado.substring(0,item.Cerrado.indexOf(' '))));
+        // item.tiempoAtencion = isNaN(tiempo)? 0: (tiempo > 1)? 1: tiempo;
         item.tiempoAtencion = isNaN(tiempo)? 0: tiempo;
     });
     tiposIncidentes = Object.keys(tempInd);
@@ -79,17 +83,13 @@ d3.csv("/data/diciembre2015.csv", function(err, data) {
             var column = [];
             column.push(estado);
 
-            var sum1 = data.filter(function (d) {
-                if (d.Estado === estado && d.Tipos === tiposIncidentes[0]) return d;
-            }).reduce(function (sum, current) { return sum + current.tiempoAtencion; }, 0);
+            tiposIncidentes.forEach(function (incidente) {
+                var sum = data.filter(function (d) {
+                    if (d.Estado === estado && d.Tipos === tiposIncidentes[0]) return d;
+                }).reduce(function (sum, current) { return sum + current.tiempoAtencion; }, 0);
 
-            column.push(sum1);
-
-            var sum2 = data.filter(function (d) {
-                if (d.Estado === estado && d.Tipos === tiposIncidentes[1]) return d;
-            }).reduce(function (sum, current) { return sum + current.tiempoAtencion; }, 0);
-
-            column.push(sum2); 
+                column.push(sum);
+            })
 
             dataStacked.push(column);           
         }
