@@ -37,7 +37,7 @@ For all tasks it is necessary to have in mind that in every moment the user can 
 - Finally, for <ins>T6</ins> we will use a table and single horizontal bar. The table will present the principal information of the selected ticket  like: the operator, the type of incident, dates (initial and final). And the single bar chart will be used to represent the total delay. The **length** will be the principal channel, representing the total delay and the different states of the incident will be represented by the **color hue**.  For this task all the states will be represented, but the states that are no chosen by the user will be colored grey.
 
 ## Mockup
-[Mockup](docs/mockup.png)
+![Mockup](docs/mockup.png)
 
 ## References
 - Recaudo Bogota: Negocio. [Available here](http://conexion.recaudobogota.com/content/negocio).
