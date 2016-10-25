@@ -2,7 +2,7 @@ var tiposIncidentes = [];
 var tiposEstados = [];
 
 function stackedBarChart(columnsData) {
-    console.log(columnsData);
+    console.log(tiposIncidentes);
     var chart = c3.generate({
         size: {
             height: 300,
@@ -15,6 +15,15 @@ function stackedBarChart(columnsData) {
             // groups: [
             //     ['data1', 'data2']
             // ]
+        },
+        axis: {
+            x: {
+                type: 'category',
+                categories: tiposIncidentes
+            }
+        },
+        legend: {
+            position: 'right'
         },
         grid: {
             y: {
