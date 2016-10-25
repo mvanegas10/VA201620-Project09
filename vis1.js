@@ -18,8 +18,12 @@ function stackedBarChart(columnsData) {
         },
         axis: {
             x: {
+                label: 'Tipo de incidente',
                 type: 'category',
                 categories: tiposIncidentes
+            },
+            y: {
+                label: 'Tiempo de atención (en días)'
             }
         },
         legend: {
@@ -31,6 +35,14 @@ function stackedBarChart(columnsData) {
             }
         }
     });
+    var firstLegend = d3.select(".c3-legend-item");
+    var legendCon = d3.select(firstLegend.node().parentNode);
+    var legendY = parseInt(firstLegend.select('text').attr('y'));
+    legendCon
+      .append('text')
+      .text('Estado del incidente')
+      .attr('y', legendY - 20)
+      .style('font-size', '16px');
 
     // setTimeout(function () {
     //     chart.groups(tiposIncidentes)
