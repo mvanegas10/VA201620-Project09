@@ -63,10 +63,7 @@ for row in spamreader:
 				query += ")"
 				cur = conn.cursor()		
 				cur.execute(query)
-				# print "-"*30
 				print row[0]
-				# print query
-				# print "-"*30
 				cur.close()
 				conn.commit()
 				conn.close()

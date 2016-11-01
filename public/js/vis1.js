@@ -1,8 +1,70 @@
-var tiposIncidentes = [];
-var tiposEstados = [];
+// ------------------------------------------------------
+// VARIABLES
+// ------------------------------------------------------
+
+var socket = io();
+var dataIncidentes = [];
+var dataTickets = {};
+var dataEstados = [];
+var timeTickets = [];
+
+// ------------------------------------------------------
+// MANAGE CONNECTION WITH BACKEND
+// ------------------------------------------------------
+
+socket.emit(INITIALIZE);
+socket.emit(GET_ESTADOS);
+
+socket.on(SHOW_DATA, function (data) {
+    console.log(":! This is a " + INITIALIZE + " request...");
+    dataIncidentes = data;
+    socket.emit(GET_ESTADOS);
+});
+
+socket.on(SHOW_ESTADOS, function (data) {
+    console.log(":! This is a " + SHOW_ESTADOS + " request...");
+    dataEstados = data.map(function (d) {return d.state_name});
+    socket.emit(GET_TICKETS);
+})
+
+socket.on(SHOW_TICKETS, function (data) {
+    console.log(":! This is a " + SHOW_TICKETS + " request...");
+    dataTickets = data.map(function (d) {return d.ticket_id});
+
+
+    console.log(dataIncidentes);
+    console.log(dataEstados);
+    console.log(dataTickets);
+
+    dataIncidentes.forEach(function (d) {
+        if (timeTickets[d.state_name] === undefined) {
+            timeTickets[d.state_name] = {};
+        }
+        timeTickets[d.state_name][d.ticket_id] = d.elapsed_time;
+    })
+
+    var dataFinal = [];
+
+    dataEstados.forEach(function (d) {
+        var nums = [];
+        nums.push(d);
+        dataTickets.forEach(function (s) {
+            if (timeTickets[d][s] === undefined) timeTickets[d][s] = 0.0;
+            else timeTickets[d][s] = +timeTickets[d][s];
+            nums.push(timeTickets[d][s]);
+        })
+        dataFinal.push(nums);
+    })
+
+    stackedBarChart(dataFinal);
+       
+});
+
+// ------------------------------------------------------
+// DRAW CHART 1
+// ------------------------------------------------------
 
 function stackedBarChart(columnsData) {
-    console.log(tiposIncidentes);
     var chart = c3.generate({
         size: {
             height: 300,
@@ -18,19 +80,22 @@ function stackedBarChart(columnsData) {
         },
         axis: {
             x: {
-                label: 'Tipo de incidente',
+                label: 'Tickets',
                 type: 'category',
-                categories: tiposIncidentes
+                categories: dataTickets
+                tick: {
+                    format: function (x) { return "Ticket No." + (x); }
+                }                  
             },
             y: {
-                label: 'Tiempo de atención (en días)',
-                tick: {
-                    format: function (x) { return (x/1000000000000) + " b"; }
-                }                
+                label: 'Tiempo de atención (en segundos)',
+                // tick: {
+                //     format: function (x) { return (x) + " b"; }
+                // }                
             }
         },
         legend: {
-            position: 'right'
+            position: 'right',
         },
         grid: {
             y: {
@@ -40,60 +105,14 @@ function stackedBarChart(columnsData) {
     });
     var firstLegend = d3.select(".c3-legend-item");
     var legendCon = d3.select(firstLegend.node().parentNode);
+    var legendX = parseInt(firstLegend.select('text').attr('x'));
     var legendY = parseInt(firstLegend.select('text').attr('y'));
     legendCon
       .append('text')
       .text('Estado del incidente')
-      .attr('y', legendY - 20)
+      .attr('x', legendX - 50)
+      .attr('y', legendY - 50)
       .style('font-size', '16px');
-
-    // setTimeout(function () {
-    //     chart.groups(tiposIncidentes)
-    // }, 1000);
-
 }
 
-function timeDifference(date2,date1) {
-    return Math.floor(date1.getTime() - date2.getTime()/1000/60/60/24);
-}
-
-d3.csv("/data/diciembre2015.csv", function(err, data) {
-    if(err) {
-        console.err(err);    
-        return; 
-    }
-    var tempInd = {};
-    var tempEst = {};
-    data.forEach(function (item) {
-        tempInd[item.Tipos] = true;
-        tempEst[item.Estado] = true;
-        var tiempo = timeDifference(new Date(item.Creado.substring(0,item.Creado.indexOf(' '))), new Date(item.Cerrado.substring(0,item.Cerrado.indexOf(' '))));
-        // item.tiempoAtencion = isNaN(tiempo)? 0: (tiempo > 1)? 1: tiempo;
-        item.tiempoAtencion = isNaN(tiempo)? 0: tiempo;
-    });
-    tiposIncidentes = Object.keys(tempInd);
-    var index = tiposIncidentes.indexOf("undefined");
-    if (index > -1) {
-        tiposIncidentes.splice(index, 1);
-    }
-    tiposEstados = Object.keys(tempEst);
-    var dataStacked = [];
-    tiposEstados.forEach(function (estado) {
-        if (estado !== "undefined") {
-            var column = [];
-            column.push(estado);
-
-            tiposIncidentes.forEach(function (incidente) {
-                var sum = data.filter(function (d) {
-                    if (d.Estado === estado && d.Tipos === tiposIncidentes[0]) return d;
-                }).reduce(function (sum, current) { return sum + current.tiempoAtencion; }, 0);
-
-                column.push(sum);
-            })
-
-            dataStacked.push(column);           
-        }
-    });
-    stackedBarChart(dataStacked);
-});
-
+// ADDITIONAL FUNCTIONS
