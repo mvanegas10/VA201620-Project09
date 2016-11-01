@@ -1,6 +1,3 @@
-
-
-
 CREATE TABLE tickets(
    id                       INTEGER  NOT NULL PRIMARY KEY 
   ,name                     VARCHAR(78) 
@@ -16,12 +13,15 @@ CREATE TABLE tickets(
   ,create_time              VARCHAR(19) 
   ,create_by                INTEGER  
   ,change_time              VARCHAR(19) 
-  ,change_by                INTEGER  
+  ,change_by                INTEGER
+  ,name_1		    VARCHAR(78)  
   ,comments                 VARCHAR(46)
+  ,type_id_1		    INTEGER
   ,tn                       INTEGER  
   ,title                    VARCHAR(48) 
   ,service_id               INTEGER  
-  ,sla_id                   VARCHAR(4) 
+  ,sla_id                   VARCHAR(4)
+  ,ticket_state_id	    INTEGER 
   ,customer_id              VARCHAR(39) 
   ,customer_user_id         VARCHAR(14) 
   ,timeout                  INTEGER  
