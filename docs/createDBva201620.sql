@@ -1,5 +1,6 @@
 CREATE TABLE tickets(
-   id                       INTEGER  NOT NULL PRIMARY KEY 
+  index			    INTEGER
+  ,id                       INTEGER
   ,name                     VARCHAR(78) 
   ,history_type_id          INTEGER  
   ,ticket_id                INTEGER  

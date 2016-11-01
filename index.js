@@ -56,7 +56,7 @@ io.on('connection', function(socket) {
     });
 
     socket.on(glbs.INITIALIZE, function() {
-        getData(socket.id, table);
+        getData(socket.id, 'tickets');
     });
 });
 
