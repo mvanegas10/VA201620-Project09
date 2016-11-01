@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<html ng-app="manager">
 <head>
   <meta charset="utf-8">
 
@@ -14,7 +15,6 @@
   <script src="js/c3/c3.min.js"></script>
   <script src="js/d3/d3.min.js"></script>
   <script src="/socket.io/socket.io.js"></script>
-  <script src="js/manager.js"></script>
   <script src="js/globals.js"></script>
   <script src="js/vis1.js"></script>
 
@@ -22,9 +22,28 @@
 <body>
   <div class="row"><h1>Visual Analytics Project - Group 09</h1></div>
   <div class="row"><ul><li>This is the final project of the  <a target="_blank" class="inline" href="http://johnguerra.co/classes/isis_4822_fall_2016/">Visual Analytics Course</a> in <a target="_blank" class="inline" href="http://www.uniandes.edu.co/">Universidad de los Andes</a>. This project aims to solve a real problem through a visual analytics application.</li></ul></div>
-  <div class="row" ng-controller="DateSelectionController as dateCtrl">
-    <div class="col-md-2"></div>
+  <div class="row" ng-controller="DateManagerController as dateCtrl">
+    <div class="col-md-2">
+    </div>
     <div class="col-md-8">
+      <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-4">        
+          <div class="form-group">
+            <p><font>Desde:</font></p>
+            <input type="date" ng-model="dateCtrl.initialDate" min="'2012-07-31" class="curve">
+          </div>
+        </div>
+        <div class="col-md-4"> 
+          <div class="form-group">
+            <p><font>Hasta:</font></p>
+            <input type="date" ng-model="dateCtrl.finalDate" min="'2012-08-01" class="curve">
+          </div>
+        </div>
+        <div class="col-md-3"> 
+          <button ng-click="dateCtrl.refrescar()"><p>Refrescar</p></button>
+        </div>
+      </div>
       <div class="row">
         <div class="col-md-12"><h3>Gráfica 1. Visualización de tiempos de atención de incidentes por tipos de incidentes</h3></div>
         <div class="col-md-12" id="stackedBarChart"></div>

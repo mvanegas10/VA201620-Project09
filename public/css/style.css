@@ -8,6 +8,13 @@ ul {
   list-style-type: none;
 }
 
+button {
+  border-radius: 4px;
+  background-color: #e7e7e7;
+  color: black;
+  padding: 0.3cm 0.3cm 0cm 0.3cm;
+}
+
 i {
   width: 18px;
   height: 18px;

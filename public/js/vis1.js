@@ -12,25 +12,24 @@ var timeTickets = [];
 // MANAGE CONNECTION WITH BACKEND
 // ------------------------------------------------------
 
-socket.emit(INITIALIZE);
-socket.emit(GET_ESTADOS);
+var msg = {"initialState":'2012-07-31', "finalState":'2012-09-04'}
+socket.emit(INITIALIZE,msg);
 
 socket.on(SHOW_DATA, function (data) {
     console.log(":! This is a " + INITIALIZE + " request...");
     dataIncidentes = data;
-    socket.emit(GET_ESTADOS);
+    socket.emit(GET_ESTADOS,msg);
 });
 
 socket.on(SHOW_ESTADOS, function (data) {
     console.log(":! This is a " + SHOW_ESTADOS + " request...");
     dataEstados = data.map(function (d) {return d.state_name});
-    socket.emit(GET_TICKETS);
+    socket.emit(GET_TICKETS,msg);
 })
 
 socket.on(SHOW_TICKETS, function (data) {
     console.log(":! This is a " + SHOW_TICKETS + " request...");
     dataTickets = data.map(function (d) {return d.ticket_id});
-
 
     console.log(dataIncidentes);
     console.log(dataEstados);
@@ -78,11 +77,14 @@ function stackedBarChart(columnsData) {
             //     ['data1', 'data2']
             // ]
         },
+        zoom: {
+            enabled: true
+        },
         axis: {
             x: {
                 label: 'Tickets',
                 type: 'category',
-                categories: dataTickets
+                categories: dataTickets,
                 tick: {
                     format: function (x) { return "Ticket No." + (x); }
                 }                  
@@ -116,3 +118,35 @@ function stackedBarChart(columnsData) {
 }
 
 // ADDITIONAL FUNCTIONS
+
+// ANGULAR MANAGEMENT
+
+// (function () {
+//   var app = angular.module('manager', []);
+
+//   app.controller('DateManagerController', function(){
+//     var _this = this;
+//     _this.socket = io();
+//     _this.refrescar = refrescar;
+//     _this.getValues = getValues;
+
+//     _this.initialDate = '2012-07-31';
+//     _this.finalDate = '2012-09-04';    
+
+//     function refrescar() {
+//       if (_this.initialDate && _this.finalDate){
+//         getValuesFilters(_this.initialDate, _this.finalDate);
+//       }
+//     }
+
+//     function getValuesFilters(initialDate, finalDate) {
+//       json = {
+//         'initialDate': initialDate,
+//         'finalDate': finalDate,
+//       };
+//       _this.socket.emit(INITIALIZE,json);
+//     }
+
+//   });
+// })();
+
