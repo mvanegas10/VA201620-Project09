@@ -74,7 +74,7 @@ io.on('connection', function(socket) {
 // ------------------------------------------------------
 
 function getData(socketId, table, msg) {
-    var query = "SELECT * FROM " + table + " WHERE elapsed_time IS NOT NULL AND create_time BETWEEN '" + msg.initialState + " 00:00:00' AND '" + msg.finalState + " 09:12:00'";
+    var query = "SELECT * FROM " + table + " WHERE elapsed_time IS NOT NULL AND create_time BETWEEN '" + msg.initialState + " 00:00:00' AND '" + msg.finalState + " 09:20:00'";
     console.log(query);
     connection.query(query, function(err, rows, fields) {
         if (!err) {
@@ -85,7 +85,7 @@ function getData(socketId, table, msg) {
 }
 
 function getEstados(socketId, table,msg) {
-    var query = "SELECT state_name FROM " + table + " WHERE elapsed_time IS NOT NULL AND create_time BETWEEN '" + msg.initialState + " 00:00:00' AND '" + msg.finalState + " 09:12:00' GROUP BY state_name";
+    var query = "SELECT state_name FROM " + table + " WHERE elapsed_time IS NOT NULL AND create_time BETWEEN '" + msg.initialState + " 00:00:00' AND '" + msg.finalState + " 09:20:00' GROUP BY state_name";
     console.log(query);
     connection.query(query, function(err, rows, fields) {
         if (!err) {
@@ -96,7 +96,7 @@ function getEstados(socketId, table,msg) {
 }
 
 function getTickets(socketId, table,msg) {
-    var query = "SELECT ticket_id FROM " + table + " WHERE elapsed_time IS NOT NULL AND create_time BETWEEN '" + msg.initialState + " 00:00:00' AND '" + msg.finalState + " 09:12:00' GROUP BY ticket_id";
+    var query = "SELECT ticket_id FROM " + table + " WHERE elapsed_time IS NOT NULL AND create_time BETWEEN '" + msg.initialState + " 00:00:00' AND '" + msg.finalState + " 09:20:00' GROUP BY ticket_id";
     console.log(query);
     connection.query(query, function(err, rows, fields) {
         if (!err) {

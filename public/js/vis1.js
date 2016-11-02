@@ -7,12 +7,13 @@ var dataIncidentes = [];
 var dataTickets = {};
 var dataEstados = [];
 var timeTickets = [];
+var chart1;
 
 // ------------------------------------------------------
 // MANAGE CONNECTION WITH BACKEND
 // ------------------------------------------------------
 
-var msg = {"initialState":'2012-07-31', "finalState":'2012-09-04'}
+var msg = {"initialState":'2012-10-04', "finalState":'2012-10-04'}
 socket.emit(INITIALIZE,msg);
 
 socket.on(SHOW_DATA, function (data) {
@@ -25,6 +26,10 @@ socket.on(SHOW_ESTADOS, function (data) {
     console.log(":! This is a " + SHOW_ESTADOS + " request...");
     dataEstados = data.map(function (d) {return d.state_name});
     socket.emit(GET_TICKETS,msg);
+    var index = dataEstados.indexOf("RESUELTO");
+    if (index > -1) {
+        dataEstados.splice(index, 1);
+    }
 })
 
 socket.on(SHOW_TICKETS, function (data) {
@@ -64,7 +69,7 @@ socket.on(SHOW_TICKETS, function (data) {
 // ------------------------------------------------------
 
 function stackedBarChart(columnsData) {
-    var chart = c3.generate({
+    chart1 = c3.generate({
         size: {
             height: 300,
             width: 900
@@ -73,12 +78,13 @@ function stackedBarChart(columnsData) {
         data: {
             columns: columnsData,
             type: 'bar',
-            // groups: [
-            //     ['data1', 'data2']
-            // ]
+            groups: [
+                dataEstados
+            ]
         },
         zoom: {
-            enabled: true
+            enabled: true,
+            rescale: true
         },
         axis: {
             x: {
@@ -86,14 +92,11 @@ function stackedBarChart(columnsData) {
                 type: 'category',
                 categories: dataTickets,
                 tick: {
-                    format: function (x) { return "Ticket No." + (x); }
+                    format: function (x) { return "No." + (x); }
                 }                  
             },
             y: {
-                label: 'Tiempo de atención (en segundos)',
-                // tick: {
-                //     format: function (x) { return (x) + " b"; }
-                // }                
+                label: 'Tiempo de atención (en segundos)',            
             }
         },
         legend: {
@@ -118,6 +121,14 @@ function stackedBarChart(columnsData) {
 }
 
 // ADDITIONAL FUNCTIONS
+
+function agregar() {
+    chart1.groups([dataEstados]);
+}
+
+function desagregar() {
+    chart1.groups([]);
+}
 
 // ANGULAR MANAGEMENT
 
