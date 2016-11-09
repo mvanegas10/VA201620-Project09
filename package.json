@@ -1,8 +1,34 @@
 {
   "name": "va201620",
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "Visual Analytics Project",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
   "dependencies": {
-    "express": "^4.10.6",
-    "mysql": "^2.5.4"
-  }
+    "angular": "^1.5.8",
+    "express": "^4.14.0",
+    "mysql": "^2.11.1",
+    "socket.io": "^1.5.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "Test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mvanegas10/VA201620-Project09.git"
+  },
+  "keywords": [
+    "VIsual",
+    "Analytics",
+    "Project"
+  ],
+  "author": "Meili Vanegas Hernández",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mvanegas10/VA201620-Project09/issues"
+  },
+  "homepage": "https://github.com/mvanegas10/VA201620-Project09#readme"
 }
