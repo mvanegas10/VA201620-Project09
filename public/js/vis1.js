@@ -13,7 +13,7 @@ var chart1;
 // MANAGE CONNECTION WITH BACKEND
 // ------------------------------------------------------
 
-var msg = {"initialState":'2012-10-04', "finalState":'2012-10-04'}
+var msg = {"initialState":'2016-06-13', "finalState":'2016-06-14'}
 socket.emit(INITIALIZE,msg);
 
 socket.on(SHOW_DATA, function (data) {

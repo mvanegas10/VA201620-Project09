@@ -29,6 +29,7 @@ http.listen(port, function() {
     console.log('Server ready and listening on port: ' + port);
 });
 
+
 var connection = mysql.createConnection({
   host     : 'localhost',
   user     : 'root',
@@ -36,7 +37,6 @@ var connection = mysql.createConnection({
   database : 'va201620'
 });
 connection.connect();
-
 // ------------------------------------------------------
 // Event Management
 // ------------------------------------------------------
