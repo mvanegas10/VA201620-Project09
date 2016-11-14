@@ -1,0 +1,2 @@
+DELETE FROM tickets WHERE ticket_id NOT IN (SELECT nuevo.* FROM (SELECT ticket_id FROM tickets WHERE current_state = 'NUEVO') nuevo INNER JOIN
+(SELECT ticket_id FROM tickets WHERE current_state = 'CERRADO') cerrado ON nuevo.ticket_id = cerrado.ticket_id);

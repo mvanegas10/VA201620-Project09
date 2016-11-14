@@ -1,0 +1,1 @@
+COPY tickets FROM '/Users/Meili/Documents/VA201620-Project09/data/tickets.csv' WITH DELIMITER ',' NULL 'NULL' ;
