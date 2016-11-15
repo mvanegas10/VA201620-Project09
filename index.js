@@ -5,7 +5,8 @@
 var app = require('express')();
 var http = require('http').Server(app);
 var express = require('express');
-var mysql = require('mysql');
+
+var pg = require('pg');
 
 var io = require('socket.io')(http);
 var fs = require('fs');
@@ -29,14 +30,17 @@ http.listen(port, function() {
     console.log('Server ready and listening on port: ' + port);
 });
 
+var config = {
+  user: 'Meili', //env var: PGUSER
+  database: 'va201620', //env var: PGDATABASE
+  password: '', //env var: PGPASSWORD
+  host: 'localhost', // Server hosting the postgres database
+  port: 5432, //env var: PGPORT
+  max: 10, // max number of clients in the pool
+  idleTimeoutMillis: 30000, // how long a client is allowed to remain idle before being closed
+};
 
-var connection = mysql.createConnection({
-  host     : 'localhost',
-  user     : 'root',
-  password : '1234',
-  database : 'va201620'
-});
-connection.connect();
+var pool = new pg.Pool(config);
 // ------------------------------------------------------
 // Event Management
 // ------------------------------------------------------
@@ -74,34 +78,53 @@ io.on('connection', function(socket) {
 // ------------------------------------------------------
 
 function getData(socketId, table, msg) {
-    var query = "SELECT * FROM " + table + " WHERE elapsed_time IS NOT NULL AND create_time BETWEEN '" + msg.initialState + " 00:00:00' AND '" + msg.finalState + " 09:20:00'";
-    console.log(query);
-    connection.query(query, function(err, rows, fields) {
-        if (!err) {
-            clients[socketId].emit(glbs.SHOW_DATA, rows);
+    pool.connect(function(err, client, done) {
+      if(err) {
+        return console.error('Error fetching client from pool', err);
+      }
+      var query = "SELECT * FROM " + table + " WHERE time_begin_current BETWEEN '" + msg.initialState + " 00:00:00' AND '" + msg.finalState + " 00:00:00'";
+      // var query = "SELECT * FROM " + table + " WHERE elapsed_time IS NOT NULL AND create_time BETWEEN '" + msg.initialState + " 00:00:00' AND '" + msg.finalState + " 09:20:00'";
+      client.query(query, function(err, result) {
+        done();
+
+        if(err) {
+          return console.error('Error running query ' + query, err);
         }
-        else console.log('Error while performing Query.');
+        else clients[socketId].emit(glbs.SHOW_DATA, result.rows);
+      });
     });
 }
 
 function getEstados(socketId, table,msg) {
-    var query = "SELECT state_name FROM " + table + " WHERE elapsed_time IS NOT NULL AND create_time BETWEEN '" + msg.initialState + " 00:00:00' AND '" + msg.finalState + " 09:20:00' GROUP BY state_name";
-    console.log(query);
-    connection.query(query, function(err, rows, fields) {
-        if (!err) {
-            clients[socketId].emit(glbs.SHOW_ESTADOS, rows);
+    pool.connect(function(err, client, done) {
+      if(err) {
+        return console.error('Error fetching client from pool', err);
+      }
+      var query = "SELECT current_state FROM " + table + " WHERE time_begin_current BETWEEN '" + msg.initialState + " 00:00:00' AND '" + msg.finalState + " 00:00:00' GROUP BY current_state";
+      client.query(query, function(err, result) {
+        done();
+
+        if(err) {
+          return console.error('Error running query ' + query, err);
         }
-        else console.log('Error while performing Query.');
+        else clients[socketId].emit(glbs.SHOW_ESTADOS, result.rows);
+      });
     });
 }
 
 function getTickets(socketId, table,msg) {
-    var query = "SELECT ticket_id FROM " + table + " WHERE elapsed_time IS NOT NULL AND create_time BETWEEN '" + msg.initialState + " 00:00:00' AND '" + msg.finalState + " 09:20:00' GROUP BY ticket_id";
-    console.log(query);
-    connection.query(query, function(err, rows, fields) {
-        if (!err) {
-            clients[socketId].emit(glbs.SHOW_TICKETS, rows);
+    pool.connect(function(err, client, done) {
+      if(err) {
+        return console.error('Error fetching client from pool', err);
+      }
+      var query = "SELECT ticket_id FROM " + table + " WHERE time_begin_current BETWEEN '" + msg.initialState + " 00:00:00' AND '" + msg.finalState + " 00:00:00' GROUP BY ticket_id ";
+      client.query(query, function(err, result) {
+        done();
+
+        if(err) {
+          return console.error('Error running query ' + query, err);
         }
-        else console.log('Error while performing Query.');
+        else clients[socketId].emit(glbs.SHOW_TICKETS, result.rows);
+      });
     });
 }

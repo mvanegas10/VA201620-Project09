@@ -1,3 +1,12 @@
+/**
+ * Copyright (c) 2010-2016 Brian Carlson (brian.m.carlson@gmail.com)
+ * All rights reserved.
+ *
+ * This source code is licensed under the MIT license found in the
+ * README.md file in the root directory of this source tree.
+ */
+
+var defaults = require('./defaults');
 
 // convert a JS array to a postgres array literal
 // uses comma separator so won't work for types like box that use
@@ -32,7 +41,11 @@ var prepareValue = function(val, seen) {
     return val;
   }
   if(val instanceof Date) {
-    return dateToString(val);
+    if(defaults.parseInputDatesAsUTC) {
+      return dateToStringUTC(val);
+    } else {
+      return dateToString(val);
+    }
   }
   if(Array.isArray(val)) {
     return arrayString(val);
@@ -42,6 +55,9 @@ var prepareValue = function(val, seen) {
   }
   if(typeof val === 'object') {
     return prepareObject(val, seen);
+  }
+  if (typeof val === 'undefined') {
+    throw new Error('SQL queries with undefined where clause option');
   }
   return val.toString();
 };
@@ -59,13 +75,14 @@ function prepareObject(val, seen) {
   return JSON.stringify(val);
 }
 
+function pad(number, digits) {
+  number = ""  +number;
+  while(number.length < digits)
+    number = "0" + number;
+  return number;
+}
+
 function dateToString(date) {
-  function pad(number, digits) {
-    number = ""+number;
-    while(number.length < digits)
-      number = "0"+number;
-    return number;
-  }
 
   var offset = -date.getTimezoneOffset();
   var ret = pad(date.getFullYear(), 4) + '-' +
@@ -84,6 +101,19 @@ function dateToString(date) {
     ret += "+";
 
   return ret + pad(Math.floor(offset/60), 2) + ":" + pad(offset%60, 2);
+}
+
+function dateToStringUTC(date) {
+  
+  var ret = pad(date.getUTCFullYear(), 4) + '-' +
+      pad(date.getUTCMonth() + 1, 2) + '-' +
+      pad(date.getUTCDate(), 2) + 'T' +
+      pad(date.getUTCHours(), 2) + ':' +
+      pad(date.getUTCMinutes(), 2) + ':' +
+      pad(date.getUTCSeconds(), 2) + '.' +
+      pad(date.getUTCMilliseconds(), 3);
+  
+  return ret + "+00:00";
 }
 
 function normalizeQueryConfig (config, values, callback) {

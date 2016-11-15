@@ -24,12 +24,8 @@ socket.on(SHOW_DATA, function (data) {
 
 socket.on(SHOW_ESTADOS, function (data) {
     console.log(":! This is a " + SHOW_ESTADOS + " request...");
-    dataEstados = data.map(function (d) {return d.state_name});
+    dataEstados = data.map(function (d) {return d.current_state});
     socket.emit(GET_TICKETS,msg);
-    var index = dataEstados.indexOf("RESUELTO");
-    if (index > -1) {
-        dataEstados.splice(index, 1);
-    }
 })
 
 socket.on(SHOW_TICKETS, function (data) {
@@ -41,10 +37,10 @@ socket.on(SHOW_TICKETS, function (data) {
     console.log(dataTickets);
 
     dataIncidentes.forEach(function (d) {
-        if (timeTickets[d.state_name] === undefined) {
-            timeTickets[d.state_name] = {};
+        if (timeTickets[d.current_state] === undefined) {
+            timeTickets[d.current_state] = {};
         }
-        timeTickets[d.state_name][d.ticket_id] = d.elapsed_time;
+        timeTickets[d.current_state][d.ticket_id] = d.duration;
     })
 
     var dataFinal = [];
@@ -87,13 +83,11 @@ function stackedBarChart(columnsData) {
             rescale: true
         },
         axis: {
+            rotated: true,
             x: {
                 label: 'Tickets',
                 type: 'category',
-                categories: dataTickets,
-                tick: {
-                    format: function (x) { return "No." + (x); }
-                }                  
+                categories: dataTickets                 
             },
             y: {
                 label: 'Tiempo de atención (en segundos)',            
