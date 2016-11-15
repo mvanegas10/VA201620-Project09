@@ -7,6 +7,7 @@ var dataIncidentes = [];
 var dataTickets = {};
 var dataEstados = [];
 var timeTickets = [];
+var chart;
 var chart1;
 
 // ------------------------------------------------------
@@ -63,12 +64,48 @@ socket.on(SHOW_TICKETS, function (data) {
 // ------------------------------------------------------
 // DRAW CHART 1
 // ------------------------------------------------------
+function lineChart(columnsData) {
+    chart = c3.generate({
+        size: {
+            height: 300,
+            width: 1225
+        },
+        bindto: '#lineChart',
+        data: {
+            x: 'x',
+            columns: [
+                ['x', '2013-01-01', '2013-01-02', '2013-01-03', '2013-01-04', '2013-01-05', '2013-01-06'],
+                ['data1', 30, 200, 100, 400, 150, 250],
+                ['data2', 130, 340, 200, 500, 250, 350]
+            ]
+        },
+        zoom: {
+            enabled: true,
+            rescale: true
+        },
+        axis: {
+            x: {
+                label: 'Tiempo',
+                type: 'timeseries',
+                tick: {
+                    format: '%Y-%m-%d'
+                }             
+            },
+            y: {
+                label: 'Tiempos de atención (en segundos)',            
+            }
+        },
+    });
+}
 
+// ------------------------------------------------------
+// DRAW CHART 2
+// ------------------------------------------------------
 function stackedBarChart(columnsData) {
     chart1 = c3.generate({
         size: {
-            height: 300,
-            width: 900
+            height: 500,
+            width: 1200
         },
         bindto: '#stackedBarChart',
         data: {
@@ -77,10 +114,6 @@ function stackedBarChart(columnsData) {
             groups: [
                 dataEstados
             ]
-        },
-        zoom: {
-            enabled: true,
-            rescale: true
         },
         axis: {
             rotated: true,
@@ -102,6 +135,7 @@ function stackedBarChart(columnsData) {
             }
         }
     });
+
     var firstLegend = d3.select(".c3-legend-item");
     var legendCon = d3.select(firstLegend.node().parentNode);
     var legendX = parseInt(firstLegend.select('text').attr('x'));
