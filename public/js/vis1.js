@@ -10,15 +10,14 @@ var dataEstados = [];
 var timeTickets = [];
 var chart;
 var chart1;
-var msg = " time_begin_current BETWEEN '2016-06-13' AND '2016-06-14'";
-var msgSelection = undefined;
+var msgSelection = [];
 
 // ------------------------------------------------------
 // MANAGE CONNECTION WITH BACKEND
 // ------------------------------------------------------
 
 socket.emit(INITIALIZE_DAYS);
-socket.emit(INITIALIZE_STACKED,msg);
+socket.emit(INITIALIZE_STACKED,"");
 
 socket.on(SHOW_DAYS, function (data) {
     console.log(":! This is a " + SHOW_DAYS + " request...");
@@ -34,15 +33,13 @@ socket.on(SHOW_DAYS, function (data) {
 socket.on(SHOW_DATA, function (data) {
     console.log(":! This is a " + SHOW_DATA + " request...");
     dataIncidentes = data;
-    if (msgSelection !== undefined) socket.emit(GET_ESTADOS,msgSelection);
-    else  socket.emit(GET_ESTADOS,msg);
+    socket.emit(GET_ESTADOS,getQueryString());
 });
 
 socket.on(SHOW_ESTADOS, function (data) {
     console.log(":! This is a " + SHOW_ESTADOS + " request...");
     dataEstados = data.map(function (d) {return d.current_state;});
-    if (msgSelection !== undefined) socket.emit(GET_TICKETS,msgSelection);
-    else  socket.emit(GET_TICKETS,msg);
+    socket.emit(GET_TICKETS,getQueryString());
 })
 
 socket.on(SHOW_TICKETS, function (data) {
@@ -83,7 +80,7 @@ socket.on(SHOW_TICKETS, function (data) {
 function lineChart(dataX, dataY, dataZ) {
     chart = c3.generate({
         size: {
-            height: 200,
+            height: 150,
             width: 1225
         },
         bindto: '#lineChart',
@@ -101,14 +98,9 @@ function lineChart(dataX, dataY, dataZ) {
                 return (dataZ[d.index] == 5 || dataZ[d.index] == 6)? "#d00" : "#ddd";
             },
             onclick: function (d, element) {
-                if (msgSelection === undefined) msgSelection = " date(time_begin_current) = '" + d.x.toISOString().substring(0,10) + "'";
-                else msgSelection += " OR date(time_begin_current) = '" + d.x.toISOString().substring(0,10) + "'";
                 chart1 = undefined;
-                var dataIncidentes = [];
-                var dataTickets = {};
-                var dataEstados = [];
-                var timeTickets = [];
-                socket.emit(INITIALIZE_STACKED,msgSelection);
+                socket.emit(INITIALIZE_STACKED,getQueryString());
+                msg = undefined;
             }
         },
         zoom: {
@@ -117,21 +109,26 @@ function lineChart(dataX, dataY, dataZ) {
         },
         axis: {
             x: {
+                show: false,                
                 label: 'Día',
                 type: 'timeseries',
                 tick: {
-                    format: '%Y-%m-%d'
+                    format: '%Y-%m-%d',
+                    count: 12
                 }             
             },
             y: {
-                label: 'Tiempos (en segundos)',            
+                show: false,
+                label: 'Tiempos (en segundos)',
+                tick: {
+                    count: 1
+                }             
             }
         },
         legend: {
             show: false,
         },
     });
-    // chart.hide(['color']);
 }
 
 // ------------------------------------------------------
@@ -149,8 +146,11 @@ function stackedBarChart(columnsData) {
             type: 'bar',
             groups: [
                 dataEstados
-            ]
+            ],
         },
+        color: {
+            pattern: ['#1f77b4', '#aec7e8', '#ff7f0e', '#ffbb78', '#2ca02c', '#98df8a', '#d62728', '#ff9896', '#9467bd', '#c5b0d5', '#8c564b', '#c49c94', '#e377c2', '#f7b6d2', '#7f7f7f', '#c7c7c7', '#bcbd22', '#dbdb8d', '#17becf', '#9edae5']
+        },        
         axis: {
             rotated: true,
             x: {
@@ -192,6 +192,16 @@ function agregar() {
 
 function desagregar() {
     chart1.groups([]);
+}
+
+function getQueryString() {
+    var answer;
+    msgSelection = chart.selected();
+    msgSelection.forEach(function (d) {
+        if(answer === undefined) answer = " date(time_begin_current) = '" + d.x.toISOString().substring(0,10) + "'";
+        else answer += " OR date(time_begin_current) = '" + d.x.toISOString().substring(0,10) + "'";
+    });
+    return answer;
 }
 
 // ANGULAR MANAGEMENT
