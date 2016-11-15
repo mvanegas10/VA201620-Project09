@@ -99,8 +99,11 @@ function lineChart(dataX, dataY, dataZ) {
             },
             onclick: function (d, element) {
                 chart1 = undefined;
-                socket.emit(INITIALIZE_STACKED,getQueryString());
-                msg = undefined;
+                if(chart.selected().length === 0){
+                    d3.select("#stackedBarChart").html("");
+                    d3.select("#stackedBarChart").selectAll("*").remove();
+                }
+                else socket.emit(INITIALIZE_STACKED,getQueryString());
             }
         },
         zoom: {
@@ -109,20 +112,17 @@ function lineChart(dataX, dataY, dataZ) {
         },
         axis: {
             x: {
-                show: false,                
+                // show: false,                
                 label: 'Día',
                 type: 'timeseries',
                 tick: {
                     format: '%Y-%m-%d',
-                    count: 12
+                    count: 24
                 }             
             },
             y: {
-                show: false,
-                label: 'Tiempos (en segundos)',
-                tick: {
-                    count: 1
-                }             
+                // show: false,
+                label: 'Tiempos (en segundos)',       
             }
         },
         legend: {
@@ -138,7 +138,7 @@ function stackedBarChart(columnsData) {
     chart1 = c3.generate({
         size: {
             height: 500,
-            width: 1200
+            width: 1000
         },
         bindto: '#stackedBarChart',
         data: {
@@ -156,7 +156,12 @@ function stackedBarChart(columnsData) {
             x: {
                 label: 'Tickets',
                 type: 'category',
-                categories: dataTickets                 
+                categories: dataTickets,
+                tick: {
+                    culling: {
+                        max: 40
+                    }  
+                }            
             },
             y: {
                 label: 'Tiempo de atención (en segundos)',            
