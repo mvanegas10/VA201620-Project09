@@ -3,39 +3,53 @@
 // ------------------------------------------------------
 
 var socket = io();
+var dataDays = [];
 var dataIncidentes = [];
 var dataTickets = {};
 var dataEstados = [];
 var timeTickets = [];
 var chart;
 var chart1;
+var msg = " time_begin_current BETWEEN '2016-06-13' AND '2016-06-14'";
+var msgSelection;
 
 // ------------------------------------------------------
 // MANAGE CONNECTION WITH BACKEND
 // ------------------------------------------------------
 
-var msg = {"initialState":'2016-06-13', "finalState":'2016-06-14'}
-socket.emit(INITIALIZE,msg);
+socket.emit(INITIALIZE_DAYS);
+socket.emit(INITIALIZE_STACKED,msg);
+
+socket.on(SHOW_DAYS, function (data) {
+    console.log(":! This is a " + SHOW_DAYS + " request...");
+    dataDays = data;
+    dataX = dataDays.map(function (d) {return d.day.substring(0,10);})
+    dataX.unshift('x');
+    dataY = dataDays.map(function (d) {return d.duration;});
+    dataY.unshift('Tiempo en segundos');    
+    dataZ = dataDays.map(function (d) {return d.weekday;});
+    lineChart(dataX, dataY, dataZ);
+});
 
 socket.on(SHOW_DATA, function (data) {
-    console.log(":! This is a " + INITIALIZE + " request...");
+    console.log(":! This is a " + SHOW_DATA + " request...");
     dataIncidentes = data;
     socket.emit(GET_ESTADOS,msg);
 });
 
 socket.on(SHOW_ESTADOS, function (data) {
     console.log(":! This is a " + SHOW_ESTADOS + " request...");
-    dataEstados = data.map(function (d) {return d.current_state});
+    dataEstados = data.map(function (d) {return d.current_state;});
     socket.emit(GET_TICKETS,msg);
 })
 
 socket.on(SHOW_TICKETS, function (data) {
     console.log(":! This is a " + SHOW_TICKETS + " request...");
-    dataTickets = data.map(function (d) {return d.ticket_id});
+    dataTickets = data.map(function (d) {return d.ticket_id;});
 
-    console.log(dataIncidentes);
-    console.log(dataEstados);
-    console.log(dataTickets);
+    // console.log(dataIncidentes);
+    // console.log(dataEstados);
+    // console.log(dataTickets);
 
     dataIncidentes.forEach(function (d) {
         if (timeTickets[d.current_state] === undefined) {
@@ -64,20 +78,31 @@ socket.on(SHOW_TICKETS, function (data) {
 // ------------------------------------------------------
 // DRAW CHART 1
 // ------------------------------------------------------
-function lineChart(columnsData) {
+function lineChart(dataX, dataY, dataZ) {
     chart = c3.generate({
         size: {
-            height: 300,
+            height: 200,
             width: 1225
         },
         bindto: '#lineChart',
         data: {
             x: 'x',
             columns: [
-                ['x', '2013-01-01', '2013-01-02', '2013-01-03', '2013-01-04', '2013-01-05', '2013-01-06'],
-                ['data1', 30, 200, 100, 400, 150, 250],
-                ['data2', 130, 340, 200, 500, 250, 350]
-            ]
+                dataX,
+                dataY
+            ],
+            selection: {
+                enabled: true,
+                multiple: true,
+            },
+            color: function (color,d) {
+                return (dataZ[d.index] == 5 || dataZ[d.index] == 6)? "#d00" : "#ddd";
+            },
+            onclick: function (d, element) {
+                if (msgSelection === undefined) msgSelection = " time_begin_current = '" + d.x.toISOString().substring(0,10) + "'";
+                else msgSelection += " OR time_begin_current = '" + d.x.toISOString().substring(0,10) + "'";
+                socket.emit(INITIALIZE_STACKED,msgSelection);
+            }
         },
         zoom: {
             enabled: true,
@@ -85,17 +110,21 @@ function lineChart(columnsData) {
         },
         axis: {
             x: {
-                label: 'Tiempo',
+                label: 'Día',
                 type: 'timeseries',
                 tick: {
                     format: '%Y-%m-%d'
                 }             
             },
             y: {
-                label: 'Tiempos de atención (en segundos)',            
+                label: 'Tiempos (en segundos)',            
             }
         },
+        legend: {
+            show: false,
+        },
     });
+    // chart.hide(['color']);
 }
 
 // ------------------------------------------------------

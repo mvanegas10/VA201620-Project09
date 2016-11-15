@@ -57,7 +57,12 @@ io.on('connection', function(socket) {
         delete clients[socket.id];
     });
 
-    socket.on(glbs.INITIALIZE, function(msg) {        
+    socket.on(glbs.INITIALIZE_DAYS, function(msg) {        
+        console.log(':! This is a ' + glbs.INITIALIZE + ' request...')
+        getDays(socket.id, 'days');
+    });
+
+    socket.on(glbs.INITIALIZE_STACKED, function(msg) {        
         console.log(':! This is a ' + glbs.INITIALIZE + ' request...')
         getData(socket.id, 'tickets', msg);
     });
@@ -77,54 +82,71 @@ io.on('connection', function(socket) {
 // Functions
 // ------------------------------------------------------
 
-function getData(socketId, table, msg) {
-    pool.connect(function(err, client, done) {
-      if(err) {
-        return console.error('Error fetching client from pool', err);
-      }
-      var query = "SELECT * FROM " + table + " WHERE time_begin_current BETWEEN '" + msg.initialState + " 00:00:00' AND '" + msg.finalState + " 00:00:00'";
-      // var query = "SELECT * FROM " + table + " WHERE elapsed_time IS NOT NULL AND create_time BETWEEN '" + msg.initialState + " 00:00:00' AND '" + msg.finalState + " 09:20:00'";
-      client.query(query, function(err, result) {
-        done();
+function getDays(socketId, table) {
+  pool.connect(function(err, client, done) {
+    if(err) {
+      return console.error('Error fetching client from pool', err);
+    }
+    var query = "SELECT * FROM " + table + " ORDER BY day";
+    console.log(query);
+    client.query(query, function(err, result) {
+      done();
 
-        if(err) {
-          return console.error('Error running query ' + query, err);
-        }
-        else clients[socketId].emit(glbs.SHOW_DATA, result.rows);
-      });
+      if(err) {
+        return console.error('Error running query ' + query, err);
+      }
+      else clients[socketId].emit(glbs.SHOW_DAYS, result.rows);
     });
+  });
+}
+
+function getData(socketId, table, msg) {
+  pool.connect(function(err, client, done) {
+    if(err) {
+      return console.error('Error fetching client from pool', err);
+    }
+    var query = "SELECT * FROM " + table + " WHERE " + msg;
+    client.query(query, function(err, result) {
+      done();
+
+      if(err) {
+        return console.error('Error running query ' + query, err);
+      }
+      else clients[socketId].emit(glbs.SHOW_DATA, result.rows);
+    });
+  });
 }
 
 function getEstados(socketId, table,msg) {
-    pool.connect(function(err, client, done) {
-      if(err) {
-        return console.error('Error fetching client from pool', err);
-      }
-      var query = "SELECT current_state FROM " + table + " WHERE time_begin_current BETWEEN '" + msg.initialState + " 00:00:00' AND '" + msg.finalState + " 00:00:00' GROUP BY current_state";
-      client.query(query, function(err, result) {
-        done();
+  pool.connect(function(err, client, done) {
+    if(err) {
+      return console.error('Error fetching client from pool', err);
+    }
+    var query = "SELECT current_state FROM " + table + " WHERE " + msg + " GROUP BY current_state";
+    client.query(query, function(err, result) {
+      done();
 
-        if(err) {
-          return console.error('Error running query ' + query, err);
-        }
-        else clients[socketId].emit(glbs.SHOW_ESTADOS, result.rows);
-      });
+      if(err) {
+        return console.error('Error running query ' + query, err);
+      }
+      else clients[socketId].emit(glbs.SHOW_ESTADOS, result.rows);
     });
+  });
 }
 
 function getTickets(socketId, table,msg) {
-    pool.connect(function(err, client, done) {
-      if(err) {
-        return console.error('Error fetching client from pool', err);
-      }
-      var query = "SELECT ticket_id FROM " + table + " WHERE time_begin_current BETWEEN '" + msg.initialState + " 00:00:00' AND '" + msg.finalState + " 00:00:00' GROUP BY ticket_id ";
-      client.query(query, function(err, result) {
-        done();
+  pool.connect(function(err, client, done) {
+    if(err) {
+      return console.error('Error fetching client from pool', err);
+    }
+    var query = "SELECT ticket_id FROM " + table + " WHERE " + msg + " GROUP BY ticket_id ";
+    client.query(query, function(err, result) {
+      done();
 
-        if(err) {
-          return console.error('Error running query ' + query, err);
-        }
-        else clients[socketId].emit(glbs.SHOW_TICKETS, result.rows);
-      });
+      if(err) {
+        return console.error('Error running query ' + query, err);
+      }
+      else clients[socketId].emit(glbs.SHOW_TICKETS, result.rows);
     });
+  });
 }
