@@ -15,33 +15,40 @@
 
 import psycopg2
 from sets import Set
+from datetime import datetime
 
 try:
     conn = psycopg2.connect("dbname='va201620' user='Meili' host='localhost' password=''")
 except:
     print "I am unable to connect to the database"
 
-days = []
+daysDuration = {}
 cur = conn.cursor()
-cur.execute("SELECT * from tickets")
+cur.execute("SELECT date(time_finish_current),duration from tickets")
 rows = cur.fetchall()
 cur.close()
-for i,row in enumerate(rows):
-	cur1 = conn.cursor()
-	sql = "SELECT date(time_finish_current) FROM tickets WHERE id = %d" % (row[11])	
-	cur1.execute(sql)
-	rows = cur1.fetchall()
-	day = rows[0][0]
-	days.append(day)
-	cur1.close()
+for row in rows:
+	try: daysDuration[row[0]] += row[1]
+	except: daysDuration[row[0]] = row[1]
+# print daysDuration	
 
-days_set = Set(days)
-print days_set
+for key in daysDuration:
+	cur = conn.cursor()
+	sql = "UPDATE days SET duration = %d , weekday = %d WHERE day = '%s'" % (daysDuration[key],key.weekday(),key.strftime("%Y-%m-%d"))
+	print sql
+	cur.execute(sql)
+	cur.close()
 
-for day in days_set:
-	cur1 = conn.cursor()
-	cur1.execute("""INSERT INTO days (day,duration) VALUES (%s, 0);""",(day,))
-	cur1.close()
+# for day in days_set:
+# 	cur1 = conn.cursor()
+# 	day = day.strftime("%Y-%m-%d")
+# 	sql = "INSERT INTO days (day,duration) VALUES ('%s', 0);" % (day)
+# 	print sql
+# 	# print day.strftime("%Y-%m-%d")
+# 	cur1.execute(sql)
+# 	cur1.close()
+
+conn.commit()
 
 
 # cur = conn.cursor()
