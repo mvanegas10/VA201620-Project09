@@ -11,7 +11,7 @@ var timeTickets = [];
 var chart;
 var chart1;
 var msg = " time_begin_current BETWEEN '2016-06-13' AND '2016-06-14'";
-var msgSelection;
+var msgSelection = undefined;
 
 // ------------------------------------------------------
 // MANAGE CONNECTION WITH BACKEND
@@ -34,17 +34,19 @@ socket.on(SHOW_DAYS, function (data) {
 socket.on(SHOW_DATA, function (data) {
     console.log(":! This is a " + SHOW_DATA + " request...");
     dataIncidentes = data;
-    socket.emit(GET_ESTADOS,msg);
+    if (msgSelection !== undefined) socket.emit(GET_ESTADOS,msgSelection);
+    else  socket.emit(GET_ESTADOS,msg);
 });
 
 socket.on(SHOW_ESTADOS, function (data) {
     console.log(":! This is a " + SHOW_ESTADOS + " request...");
     dataEstados = data.map(function (d) {return d.current_state;});
-    socket.emit(GET_TICKETS,msg);
+    if (msgSelection !== undefined) socket.emit(GET_TICKETS,msgSelection);
+    else  socket.emit(GET_TICKETS,msg);
 })
 
 socket.on(SHOW_TICKETS, function (data) {
-    console.log(":! This is a " + SHOW_TICKETS + " request...");
+    console.log(":! This is a " + SHOW_TICKETS + " request...");    
     dataTickets = data.map(function (d) {return d.ticket_id;});
 
     // console.log(dataIncidentes);
@@ -99,8 +101,13 @@ function lineChart(dataX, dataY, dataZ) {
                 return (dataZ[d.index] == 5 || dataZ[d.index] == 6)? "#d00" : "#ddd";
             },
             onclick: function (d, element) {
-                if (msgSelection === undefined) msgSelection = " time_begin_current = '" + d.x.toISOString().substring(0,10) + "'";
-                else msgSelection += " OR time_begin_current = '" + d.x.toISOString().substring(0,10) + "'";
+                if (msgSelection === undefined) msgSelection = " date(time_begin_current) = '" + d.x.toISOString().substring(0,10) + "'";
+                else msgSelection += " OR date(time_begin_current) = '" + d.x.toISOString().substring(0,10) + "'";
+                chart1 = undefined;
+                var dataIncidentes = [];
+                var dataTickets = {};
+                var dataEstados = [];
+                var timeTickets = [];
                 socket.emit(INITIALIZE_STACKED,msgSelection);
             }
         },

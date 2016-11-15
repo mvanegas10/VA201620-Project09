@@ -88,7 +88,6 @@ function getDays(socketId, table) {
       return console.error('Error fetching client from pool', err);
     }
     var query = "SELECT * FROM " + table + " ORDER BY day";
-    console.log(query);
     client.query(query, function(err, result) {
       done();
 
@@ -106,8 +105,10 @@ function getData(socketId, table, msg) {
       return console.error('Error fetching client from pool', err);
     }
     var query = "SELECT * FROM " + table + " WHERE " + msg;
+
     client.query(query, function(err, result) {
       done();
+      console.log(query);
 
       if(err) {
         return console.error('Error running query ' + query, err);
@@ -125,7 +126,7 @@ function getEstados(socketId, table,msg) {
     var query = "SELECT current_state FROM " + table + " WHERE " + msg + " GROUP BY current_state";
     client.query(query, function(err, result) {
       done();
-
+      console.log(query);
       if(err) {
         return console.error('Error running query ' + query, err);
       }
@@ -142,6 +143,7 @@ function getTickets(socketId, table,msg) {
     var query = "SELECT ticket_id FROM " + table + " WHERE " + msg + " GROUP BY ticket_id ";
     client.query(query, function(err, result) {
       done();
+      console.log(query);
 
       if(err) {
         return console.error('Error running query ' + query, err);
