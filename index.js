@@ -59,7 +59,7 @@ io.on('connection', function(socket) {
 
     socket.on(glbs.INITIALIZE_DAYS, function(msg) {        
         console.log(':! This is a ' + glbs.INITIALIZE + ' request...')
-        getDays(socket.id, 'days');
+        getDays(socket.id);
     });
 
     socket.on(glbs.INITIALIZE_STACKED, function(msg) {        
@@ -82,12 +82,12 @@ io.on('connection', function(socket) {
 // Functions
 // ------------------------------------------------------
 
-function getDays(socketId, table) {
+function getDays(socketId) {
   pool.connect(function(err, client, done) {
     if(err) {
       return console.error('Error fetching client from pool', err);
     }
-    var query = "SELECT * FROM " + table + " ORDER BY day";
+    var query = "SELECT DATE(time_finish_current) as day, AVG(duration) as duration, EXTRACT(dow from time_finish_current) as weekday FROM tickets GROUP BY day, weekday ORDER BY day;";
     client.query(query, function(err, result) {
       done();
 

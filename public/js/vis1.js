@@ -25,7 +25,7 @@ socket.on(SHOW_DAYS, function (data) {
     dataX = dataDays.map(function (d) {return d.day.substring(0,10);})
     dataX.unshift('x');
     dataY = dataDays.map(function (d) {return d.duration;});
-    dataY.unshift('Tiempo en segundos');    
+    dataY.unshift('Tiempo promedio en s');    
     dataZ = dataDays.map(function (d) {return d.weekday;});
     lineChart(dataX, dataY, dataZ);
 });
@@ -45,10 +45,6 @@ socket.on(SHOW_ESTADOS, function (data) {
 socket.on(SHOW_TICKETS, function (data) {
     console.log(":! This is a " + SHOW_TICKETS + " request...");    
     dataTickets = data.map(function (d) {return d.ticket_id;});
-
-    // console.log(dataIncidentes);
-    // console.log(dataEstados);
-    // console.log(dataTickets);
 
     dataIncidentes.forEach(function (d) {
         if (timeTickets[d.current_state] === undefined) {
@@ -78,6 +74,12 @@ socket.on(SHOW_TICKETS, function (data) {
 // DRAW CHART 1
 // ------------------------------------------------------
 function lineChart(dataX, dataY, dataZ) {
+    var arr = dataY.slice(0);
+    arr.splice(0,1);
+    arr = arr.map(Number);    
+    dataBG = Array.apply(null, Array(dataY.length)).map(Number.prototype.valueOf,Number(d3.max(d3.values(arr))));
+    dataBG[0] = 'background';
+
     chart = c3.generate({
         size: {
             height: 150,
@@ -88,14 +90,24 @@ function lineChart(dataX, dataY, dataZ) {
             x: 'x',
             columns: [
                 dataX,
-                dataY
+                dataY,
+                dataBG
             ],
+            types: {
+                y: 'line',
+                background: 'bar',
+            },
             selection: {
                 enabled: true,
                 multiple: true,
             },
+            colors: {
+                y: '#ff0000',
+                background: '#99d8c9'
+            },
             color: function (color,d) {
-                return (dataZ[d.index] == 5 || dataZ[d.index] == 6)? "#d00" : "#ddd";
+                if (d.index == 236) return '#4d004b';
+                else return d.id && d.id === 'background' ? ( (dataZ[d.index] == 6 || dataZ[d.index] == 0)?  "#99d8c9" : "#e5f5f9" ): color;
             },
             onclick: function (d, element) {
                 chart1 = undefined;
@@ -104,6 +116,31 @@ function lineChart(dataX, dataY, dataZ) {
                     d3.select("#stackedBarChart").selectAll("*").remove();
                 }
                 else socket.emit(INITIALIZE_STACKED,getQueryString());
+            }
+        },
+        bar: {
+            width: 4
+        },
+        tooltip: {
+            format: {
+                name: function (name, ratio, id, index) {
+                    if (name === 'background') return "Día de la semana";
+                    else return name; 
+                },
+                value: function (value, ratio, id, index) { 
+                    if (id === 'background') {
+                        if (index == 236) return 'HOY (Miércoles)';
+
+                        else if (dataZ[index] == 1) return "Lunes"
+                        else if (dataZ[index] == 2) return "Martes";
+                        else if (dataZ[index] == 3) return "Miércoles";
+                        else if (dataZ[index] == 4) return "Jueves";
+                        else if (dataZ[index] == 5) return "Viernes";
+                        else if (dataZ[index] == 6) return "Sábado";
+                        else if (dataZ[index] == 0) return "Domingo";
+                    } 
+                    else return Math.round(Number(value)*100)/100;
+                }
             }
         },
         zoom: {
@@ -116,13 +153,14 @@ function lineChart(dataX, dataY, dataZ) {
                 label: 'Día',
                 type: 'timeseries',
                 tick: {
-                    format: '%Y-%m-%d',
-                    count: 24
+                    // format: 'Hace',
+                    count: 24,
+                    // values: function (x) { [1,2,3,4,5,6,7,8,9,10]}
                 }             
             },
             y: {
                 // show: false,
-                label: 'Tiempos (en segundos)',       
+                label: 'Tiempo promedio en s',       
             }
         },
         legend: {
@@ -208,35 +246,3 @@ function getQueryString() {
     });
     return answer;
 }
-
-// ANGULAR MANAGEMENT
-
-// (function () {
-//   var app = angular.module('manager', []);
-
-//   app.controller('DateManagerController', function(){
-//     var _this = this;
-//     _this.socket = io();
-//     _this.refrescar = refrescar;
-//     _this.getValues = getValues;
-
-//     _this.initialDate = '2012-07-31';
-//     _this.finalDate = '2012-09-04';    
-
-//     function refrescar() {
-//       if (_this.initialDate && _this.finalDate){
-//         getValuesFilters(_this.initialDate, _this.finalDate);
-//       }
-//     }
-
-//     function getValuesFilters(initialDate, finalDate) {
-//       json = {
-//         'initialDate': initialDate,
-//         'finalDate': finalDate,
-//       };
-//       _this.socket.emit(INITIALIZE,json);
-//     }
-
-//   });
-// })();
-
