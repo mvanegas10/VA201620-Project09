@@ -8,6 +8,7 @@ var dataIncidentes = [];
 var dataTickets = {};
 var dataEstados = [];
 var timeTickets = [];
+var avg = 0.0;
 var chart;
 var chart1;
 var msgSelection = [];
@@ -22,6 +23,7 @@ var tipoEstado = [];
 // MANAGE CONNECTION WITH BACKEND
 // ------------------------------------------------------
 
+socket.emit(GET_AVG," 1=1");
 socket.emit(INITIALIZE_DAYS);
 socket.emit(INITIALIZE_STACKED,"");
 
@@ -36,6 +38,11 @@ socket.on(SHOW_DAYS, function (data) {
     dataY.unshift('Tiempo promedio en s');
     var dataZ = dataDays.map(function (d) {return d.weekday;});
     lineChart(dataX, dataY, dataZ);
+});
+
+socket.on(SHOW_AVG, function (data) {
+    console.log(":! This is a " + SHOW_AVG + " request...");
+    avg = data[0].avg;
 });
 
 socket.on(SHOW_DATA, function (data) {
@@ -82,6 +89,8 @@ socket.on(SHOW_TICKETS, function (data) {
 // DRAW CHART 1
 // ------------------------------------------------------
 function lineChart(dataX, dataY, dataZ, daySelected) {
+    var dataAVG = Array.apply(null, Array(dataY.length)).map(Number.prototype.valueOf,Number(avg));
+    dataAVG.unshift("promedio");     
     var arr = dataY.slice(0);
     arr.splice(0,1);
     arr = arr.map(Number);
@@ -90,7 +99,7 @@ function lineChart(dataX, dataY, dataZ, daySelected) {
 
     chart = c3.generate({
         size: {
-            height: 150,
+            height: 200,
             width: 1225
         },
         bindto: '#lineChart',
@@ -99,11 +108,13 @@ function lineChart(dataX, dataY, dataZ, daySelected) {
             columns: [
                 dataX,
                 dataY,
-                dataBG
+                dataBG,
+                dataAVG
             ],
             types: {
                 y: 'line',
                 background: 'bar',
+                promedio: 'line',
             },
             selection: {
                 enabled: true,
@@ -141,7 +152,6 @@ function lineChart(dataX, dataY, dataZ, daySelected) {
                             cant--;
                         }
                     });
-                    console.log(cant);
                     if(cant <= 0){
                         d3.select("#stackedBarChart").html("");
                         d3.select("#stackedBarChart").selectAll("*").remove();
@@ -149,8 +159,7 @@ function lineChart(dataX, dataY, dataZ, daySelected) {
                         msgSelection = [];
                     }
                     if (d.x === daySelected) {
-                        zoom = undefined;
-                        // socket.emit(INITIALIZE_STACKED,getQueryString());
+                        socket.emit(GET_AVG," weekday = " + dataZ[d.x]);
                         lineChart(dataX,dataY,dataZ);
                     }
                     else {
@@ -158,6 +167,7 @@ function lineChart(dataX, dataY, dataZ, daySelected) {
                     }
                 }
                 else {
+                    socket.emit(GET_AVG," weekday = " + dataZ[d.x]);
                     socket.emit(INITIALIZE_STACKED,getQueryString());
                     lineChart(dataX,dataY,dataZ,d.x);
                 }
@@ -168,8 +178,7 @@ function lineChart(dataX, dataY, dataZ, daySelected) {
             interaction: {
                 enabled: false
             }
-
-        },
+        },        
         tooltip: {
             format: {
                 title: function (d) {
@@ -198,6 +207,17 @@ function lineChart(dataX, dataY, dataZ, daySelected) {
             onzoomend: function (domain) {zoom = domain;},
             enabled: true,
             rescale: true
+        },
+        subchart: {
+            show: true,
+            size: {
+                height: 20
+            },
+            axis: {
+                x: {
+                    show: false
+                }
+            }
         },
         axis: {
             x: {
@@ -290,6 +310,16 @@ function stackedBarChart(columnsData) {
 }
 
 // ADDITIONAL FUNCTIONS
+
+function giveDayString(num) {
+    if (num == 1) return "lunes";
+    else if (num == 2) return "martes";
+    else if (num == 3) return "miércoles";
+    else if (num == 4) return "jueves";
+    else if (num == 5) return "viernes";
+    else if (num == 6) return "sábado";
+    else if (num == 0) return "domingo";
+}
 
 function agregar() {
     chart1.groups([dataEstados]);

@@ -76,6 +76,11 @@ io.on('connection', function(socket) {
         console.log(':! This is a ' + glbs.GET_TICKETS + ' request...')
         getTickets(socket.id, 'tickets', msg);
     });
+
+    socket.on(glbs.GET_AVG, function(msg) {
+        console.log(':! This is a ' + glbs.GET_AVG + ' request...')
+        getAverage(socket.id, msg);
+    });
 });
 
 // ------------------------------------------------------
@@ -151,4 +156,22 @@ function getTickets(socketId, table,msg) {
       else clients[socketId].emit(glbs.SHOW_TICKETS, result.rows);
     });
   });
+}
+
+function getAverage(socketId, msg) {
+    pool.connect(function(err, client, done) {
+    if(err) {
+      return console.error('Error fetching client from pool', err);
+    }
+    var query = "SELECT AVG(duration) FROM (SELECT duration, EXTRACT(dow FROM time_finish_current) AS weekday FROM tickets) query WHERE " + msg + ";";
+    client.query(query, function(err, result) {
+      done();
+      console.log(query);
+
+      if(err) {
+        return console.error('Error running query ' + query, err);
+      }
+      else clients[socketId].emit(glbs.SHOW_AVG, result.rows);
+    });
+  });  
 }
