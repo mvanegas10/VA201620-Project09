@@ -245,8 +245,8 @@ function getQueryString() {
     var answer;
     msgSelection = chart.selected();
     msgSelection.forEach(function (d) {
-        if(answer === undefined) answer = " date(time_begin_current) = '" + d.x.toISOString().substring(0,10) + "'";
-        else answer += " OR date(time_begin_current) = '" + d.x.toISOString().substring(0,10) + "'";
+        if(answer === undefined) answer = " date(time_begin_current) = '" + dataDays[d.x]["day"].substring(0,10) + "'";
+        else answer += " OR date(time_begin_current) = '" + dataDays[d.x]["day"].substring(0,10) + "'";
     });
     return answer;
 }
