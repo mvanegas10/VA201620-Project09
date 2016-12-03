@@ -6,6 +6,10 @@ var GET_ESTADOS = 'GET_ESTADOS';
 var GET_TICKETS = 'GET_TICKETS';
 var SHOW_ESTADOS = 'SHOW_ESTADOS';
 var SHOW_TICKETS = 'SHOW_TICKETS';
+//violin plot
+var  INITIALIZE_DAYS_VIOLIN =  'INITIALIZE_DAYS_VIOLIN';
+var INITIALIZE_TIME_STATE  = 'INITIALIZE_TIME_STATE';
+var INITIALIZE_STATES_VIOLIN =  'INITIALIZE_STATES_VIOLIN';
 
 try {
 	module.exports.INITIALIZE_DAYS = INITIALIZE_DAYS;
@@ -16,6 +20,9 @@ try {
     module.exports.GET_TICKETS = GET_TICKETS;
     module.exports.SHOW_TICKETS = SHOW_TICKETS;
     module.exports.SHOW_ESTADOS = SHOW_ESTADOS;
+		module.exports.INITIALIZE_DAYS_VIOLIN = INITIALIZE_DAYS_VIOLIN;
+		module.exports.INITIALIZE_TIME_STATE =INITIALIZE_TIME_STATE;
+		module.exports.INITIALIZE_STATES_VIOLIN = INITIALIZE_STATES_VIOLIN;
     console.log('We are running on the server...');
 } catch(err) {
     console.log('We are running on the browser...');
