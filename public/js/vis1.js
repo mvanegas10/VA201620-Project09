@@ -119,6 +119,9 @@ function lineChart(dataX, dataY, dataZ, daySelected) {
             selection: {
                 enabled: true,
                 multiple: true,
+                isselectable: function(d) {                    
+                    return !(d.id === "promedio");
+                }
             },
             colors: {
                 y: '#ff0000',
