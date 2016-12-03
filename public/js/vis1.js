@@ -208,6 +208,9 @@ function lineChart(dataX, dataY, dataZ, daySelected) {
             enabled: true,
             rescale: true
         },
+        transition: {
+            duration: null
+        },       
         subchart: {
             show: true,
             size: {
