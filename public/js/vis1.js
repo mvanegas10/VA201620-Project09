@@ -11,6 +11,7 @@ var timeTickets = [];
 var chart;
 var chart1;
 var msgSelection = [];
+var zoom;
 
 // ------------------------------------------------------
 // MANAGE CONNECTION WITH BACKEND
@@ -108,26 +109,60 @@ function lineChart(dataX, dataY, dataZ, daySelected) {
                 background: '#99d8c9'
             },
             color: function (color,d) {
-                if (d.index == 236) return '#4d004b';
+                if (d.index == 236) return '#810f7c';
                 else if (d.id && d.id === 'background') {
-                    if (daySelected && d.index === daySelected) return "#810f7c"; 
-                    else if (daySelected && dataZ[d.index] == dataZ[daySelected]) return "#8c96c6";                
+                    if (daySelected && d.index === daySelected) return "#4d004b"; 
                     else if (dataZ[d.index] == 6 || dataZ[d.index] == 0) return "#99d8c9";
                     else return "#e5f5f9";
                 } 
+                else if (daySelected && dataZ[d.index] === dataZ[daySelected])  return "#4d004b";  
                 else return color;
             },
             onclick: function (d, element) {
-                chart1 = undefined;
+                chart1 = undefined;  
+                var prev = false;
+                var it = 0;
+                msgSelection.forEach(function(i) {
+                    if (i.x === d.x) prev = true;
+                });
+
                 msgSelection = chart.selected();
-                if(chart.selected().length === 0){
-                    d3.select("#stackedBarChart").html("");
-                    d3.select("#stackedBarChart").selectAll("*").remove();
-                    chart.unselect(['Tiempo promedio en s','background']);
-                    msgSelection = [];
+                if (prev) {
+                    var cant = 0;
+                    msgSelection.forEach(function (selected,i) {
+                        cant++;
+                        if(selected.x === d.x) {
+                            delete msgSelection[i];
+                            cant--;
+                        }                        
+                    });
+                    console.log(cant);
+                    if(cant <= 0){
+                        console.log(1)
+                        console.log(prev)
+                        d3.select("#stackedBarChart").html("");
+                        d3.select("#stackedBarChart").selectAll("*").remove();
+                        chart.unselect(['Tiempo promedio en s','background']);
+                        msgSelection = [];
+                    }
+                    else{
+                        console.log(2)
+                        socket.emit(INITIALIZE_STACKED,getQueryString());
+                        if (d.x === daySelected) {
+                            zoom = undefined;
+                            lineChart(dataX,dataY,dataZ);
+                        }
+                        else {
+                            lineChart(dataX,dataY,dataZ,daySelected);
+                        }
+                    }
                 }
-                else socket.emit(INITIALIZE_STACKED,getQueryString());
-                lineChart(dataX,dataY,dataZ,d.x);
+                else if (!prev) {
+                    console.log(3)
+                    console.log(prev)
+                    socket.emit(INITIALIZE_STACKED,getQueryString());
+                    lineChart(dataX,dataY,dataZ,d.x);
+                }
             }
         },
         bar: {
@@ -162,6 +197,7 @@ function lineChart(dataX, dataY, dataZ, daySelected) {
             }
         },
         zoom: {
+            onzoomend: function (domain) {zoom = domain;},
             enabled: true,
             rescale: true
         },
@@ -194,6 +230,7 @@ function lineChart(dataX, dataY, dataZ, daySelected) {
     msgSelection.forEach(function (selected) {
         chart.select('Tiempo promedio en s',msgSelection.map(function (d) {return d.x;}));
     });
+    if (zoom !== undefined) chart.zoom(zoom);
 }
 
 // ------------------------------------------------------
