@@ -37,7 +37,7 @@ var pool  = mysql.createPool({
   connectionLimit : 10,
   host            : 'localhost',
   user            : 'root',
-  password        : 'Mayo301995',
+  password        : 'Uniandes2016_',
   database        : 'visual',
   port:3306
 });
@@ -87,7 +87,7 @@ function getDays(socketId) {
     if(err) {
       return console.error('Error fetching client from pool', err);
     }
-    var query = "SELECT DATE(time_finish_current) as day, AVG(duration) as duration, DAYOFWEEK(time_finish_current) as weekday FROM tickets GROUP BY day, weekday ORDER BY day;";
+    var query = "SELECT DATE(time_finish_current) as day, AVG(duration) as duration, DAYOFWEEK(time_finish_current)-1 as weekday FROM tickets GROUP BY day, weekday ORDER BY day;";
     connection.query(query, function(err, rows) {
       connection.release();
 
