@@ -22,11 +22,13 @@ socket.emit(INITIALIZE_STACKED,"");
 socket.on(SHOW_DAYS, function (data) {
     console.log(":! This is a " + SHOW_DAYS + " request...");
     dataDays = data;
-    dataX = dataDays.map(function (d) {return d.day.substring(0,10);})
-    dataX.unshift('x');
-    dataY = dataDays.map(function (d) {return d.duration;});
+    var dataX = ['x'];
+    dataDays.forEach(function (d,i) {
+        dataX.push((dataDays.length-1) - i);
+    });
+    var dataY = dataDays.map(function (d) {return d.duration;});
     dataY.unshift('Tiempo promedio en s');    
-    dataZ = dataDays.map(function (d) {return d.weekday;});
+    var dataZ = dataDays.map(function (d) {return d.weekday;});
     lineChart(dataX, dataY, dataZ);
 });
 
@@ -123,15 +125,17 @@ function lineChart(dataX, dataY, dataZ) {
         },
         tooltip: {
             format: {
+                title: function (d) { 
+                    if (d == 236) return 'HOY';
+                    else return "Hace " + Math.round(dataDays.length - 1 - d)  + " días";
+                },
                 name: function (name, ratio, id, index) {
                     if (name === 'background') return "Día de la semana";
                     else return name; 
                 },
                 value: function (value, ratio, id, index) { 
                     if (id === 'background') {
-                        if (index == 236) return 'HOY (Miércoles)';
-
-                        else if (dataZ[index] == 1) return "Lunes"
+                        if (dataZ[index] == 1) return "Lunes"
                         else if (dataZ[index] == 2) return "Martes";
                         else if (dataZ[index] == 3) return "Miércoles";
                         else if (dataZ[index] == 4) return "Jueves";
@@ -149,17 +153,17 @@ function lineChart(dataX, dataY, dataZ) {
         },
         axis: {
             x: {
-                // show: false,                
                 label: 'Día',
-                type: 'timeseries',
                 tick: {
-                    // format: 'Hace',
-                    count: 24,
-                    // values: function (x) { [1,2,3,4,5,6,7,8,9,10]}
-                }             
+                    count: 50,
+                    format: function (x) { 
+                        if (Math.round(dataDays.length - 1 - x) < 7) return "La semana pasada";
+                        else if (Math.round(dataDays.length - 1 - x) > 30 && Math.round(dataDays.length - 1 - x) < 60) return "El mes pasado";
+                        else return "Hace " + Math.round(dataDays.length - 1 - x)  + " días";
+                    }
+                }            
             },
             y: {
-                // show: false,
                 label: 'Tiempo promedio en s',       
             }
         },
