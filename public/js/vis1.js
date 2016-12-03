@@ -75,7 +75,7 @@ socket.on(SHOW_TICKETS, function (data) {
 // ------------------------------------------------------
 // DRAW CHART 1
 // ------------------------------------------------------
-function lineChart(dataX, dataY, dataZ) {
+function lineChart(dataX, dataY, dataZ, daySelected) {
     var arr = dataY.slice(0);
     arr.splice(0,1);
     arr = arr.map(Number);    
@@ -109,19 +109,33 @@ function lineChart(dataX, dataY, dataZ) {
             },
             color: function (color,d) {
                 if (d.index == 236) return '#4d004b';
-                else return d.id && d.id === 'background' ? ( (dataZ[d.index] == 6 || dataZ[d.index] == 0)?  "#99d8c9" : "#e5f5f9" ): color;
+                else if (d.id && d.id === 'background') {
+                    if (daySelected && d.index === daySelected) return "#810f7c"; 
+                    else if (daySelected && dataZ[d.index] == dataZ[daySelected]) return "#8c96c6";                
+                    else if (dataZ[d.index] == 6 || dataZ[d.index] == 0) return "#99d8c9";
+                    else return "#e5f5f9";
+                } 
+                else return color;
             },
             onclick: function (d, element) {
                 chart1 = undefined;
+                msgSelection = chart.selected();
                 if(chart.selected().length === 0){
                     d3.select("#stackedBarChart").html("");
                     d3.select("#stackedBarChart").selectAll("*").remove();
+                    chart.unselect(['Tiempo promedio en s','background']);
+                    msgSelection = [];
                 }
                 else socket.emit(INITIALIZE_STACKED,getQueryString());
+                lineChart(dataX,dataY,dataZ,d.x);
             }
         },
         bar: {
-            width: 4
+            width: 4,
+            interaction: {
+                enabled: false
+            }
+
         },
         tooltip: {
             format: {
@@ -158,7 +172,13 @@ function lineChart(dataX, dataY, dataZ) {
                     count: 50,
                     format: function (x) { 
                         if (Math.round(dataDays.length - 1 - x) < 7) return "La semana pasada";
-                        else if (Math.round(dataDays.length - 1 - x) > 30 && Math.round(dataDays.length - 1 - x) < 60) return "El mes pasado";
+                        else if (Math.round(dataDays.length - 1 - x) > 30 && Math.round(dataDays.length - 1 - x) <= 60) return "El mes pasado";
+                        else if (Math.round(dataDays.length - 1 - x) > 60 && Math.round(dataDays.length - 1 - x) <= 90) return "Hace dos meses";
+                        else if (Math.round(dataDays.length - 1 - x) > 90 && Math.round(dataDays.length - 1 - x) <= 120) return "Hace tres meses";
+                        else if (Math.round(dataDays.length - 1 - x) > 120 && Math.round(dataDays.length - 1 - x) <= 150) return "Hace cuatro meses";
+                        else if (Math.round(dataDays.length - 1 - x) > 150 && Math.round(dataDays.length - 1 - x) <= 180) return "Hace cinco meses";
+                        else if (Math.round(dataDays.length - 1 - x) > 180 && Math.round(dataDays.length - 1 - x) <= 210) return "Hace seis meses";
+                        else if (Math.round(dataDays.length - 1 - x) > 210 && Math.round(dataDays.length - 1 - x) <= 240) return "Hace siete meses";
                         else return "Hace " + Math.round(dataDays.length - 1 - x)  + " días";
                     }
                 }            
@@ -170,6 +190,9 @@ function lineChart(dataX, dataY, dataZ) {
         legend: {
             show: false,
         },
+    });
+    msgSelection.forEach(function (selected) {
+        chart.select('Tiempo promedio en s',msgSelection.map(function (d) {return d.x;}));
     });
 }
 
@@ -243,7 +266,6 @@ function desagregar() {
 
 function getQueryString() {
     var answer;
-    msgSelection = chart.selected();
     msgSelection.forEach(function (d) {
         if(answer === undefined) answer = " date(time_begin_current) = '" + dataDays[d.x]["day"].substring(0,10) + "'";
         else answer += " OR date(time_begin_current) = '" + dataDays[d.x]["day"].substring(0,10) + "'";
