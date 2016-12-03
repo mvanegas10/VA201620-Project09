@@ -6,6 +6,8 @@ var GET_ESTADOS = 'GET_ESTADOS';
 var GET_TICKETS = 'GET_TICKETS';
 var SHOW_ESTADOS = 'SHOW_ESTADOS';
 var SHOW_TICKETS = 'SHOW_TICKETS';
+var GET_AVG = 'GET_AVG';
+var SHOW_AVG = 'SHOW_AVG';
 
 try {
 	module.exports.INITIALIZE_DAYS = INITIALIZE_DAYS;
@@ -16,6 +18,8 @@ try {
     module.exports.GET_TICKETS = GET_TICKETS;
     module.exports.SHOW_TICKETS = SHOW_TICKETS;
     module.exports.SHOW_ESTADOS = SHOW_ESTADOS;
+    module.exports.GET_AVG = GET_AVG;
+    module.exports.SHOW_AVG = SHOW_AVG;
     console.log('We are running on the server...');
 } catch(err) {
     console.log('We are running on the browser...');

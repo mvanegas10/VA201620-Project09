@@ -8,6 +8,7 @@ var dataIncidentes = [];
 var dataTickets = {};
 var dataEstados = [];
 var timeTickets = [];
+var avg = 0.0;
 var chart;
 var chart1;
 var msgSelection = [];
@@ -19,6 +20,7 @@ var zoom;
 
 socket.emit(INITIALIZE_DAYS);
 socket.emit(INITIALIZE_STACKED,"");
+socket.emit(GET_AVG," 1=1");
 
 socket.on(SHOW_DAYS, function (data) {
     console.log(":! This is a " + SHOW_DAYS + " request...");
@@ -31,6 +33,12 @@ socket.on(SHOW_DAYS, function (data) {
     dataY.unshift('Tiempo promedio en s');    
     var dataZ = dataDays.map(function (d) {return d.weekday;});
     lineChart(dataX, dataY, dataZ);
+});
+
+socket.on(SHOW_AVG, function (data) {
+    console.log(":! This is a " + SHOW_AVG + " request...");
+    avg = data[0].avg;
+    console.log(avg);    
 });
 
 socket.on(SHOW_DATA, function (data) {
@@ -136,7 +144,6 @@ function lineChart(dataX, dataY, dataZ, daySelected) {
                             cant--;
                         }                        
                     });
-                    console.log(cant);
                     if(cant <= 0){
                         d3.select("#stackedBarChart").html("");
                         d3.select("#stackedBarChart").selectAll("*").remove();
@@ -145,7 +152,6 @@ function lineChart(dataX, dataY, dataZ, daySelected) {
                     }
                     if (d.x === daySelected) {
                         zoom = undefined;
-                        // socket.emit(INITIALIZE_STACKED,getQueryString());
                         lineChart(dataX,dataY,dataZ);
                     }
                     else {
