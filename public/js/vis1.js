@@ -94,7 +94,7 @@ function lineChart(dataX, dataY, dataZ, daySelected) {
 
     chart = c3.generate({
         size: {
-            height: 150,
+            height: 200,
             width: 1225
         },
         bindto: '#lineChart',
@@ -155,6 +155,7 @@ function lineChart(dataX, dataY, dataZ, daySelected) {
                     }
                     if (d.x === daySelected) {
                         zoom = undefined;
+                        socket.emit(GET_AVG," weekday = " + dataZ[d.x]);
                         lineChart(dataX,dataY,dataZ);
                     }
                     else {
@@ -162,6 +163,7 @@ function lineChart(dataX, dataY, dataZ, daySelected) {
                     }
                 }
                 else {
+                    socket.emit(GET_AVG," weekday = " + dataZ[d.x]);
                     socket.emit(INITIALIZE_STACKED,getQueryString());
                     lineChart(dataX,dataY,dataZ,d.x);
                 }
@@ -201,6 +203,17 @@ function lineChart(dataX, dataY, dataZ, daySelected) {
             onzoomend: function (domain) {zoom = domain;},
             enabled: true,
             rescale: true
+        },
+        subchart: {
+            show: true,
+            size: {
+                height: 20
+            },
+            axis: {
+                x: {
+                    show: false
+                }
+            }
         },
         axis: {
             x: {
