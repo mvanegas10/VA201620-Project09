@@ -118,7 +118,7 @@ function lineChart(dataX, dataY, dataZ, daySelected) {
                 else if (daySelected && dataZ[d.index] === dataZ[daySelected])  return "#4d004b";  
                 else return color;
             },
-            onclick: function (d, element) {
+            onclick: function (d) {
                 chart1 = undefined;  
                 var prev = false;
                 var it = 0;
@@ -138,28 +138,21 @@ function lineChart(dataX, dataY, dataZ, daySelected) {
                     });
                     console.log(cant);
                     if(cant <= 0){
-                        console.log(1)
-                        console.log(prev)
                         d3.select("#stackedBarChart").html("");
                         d3.select("#stackedBarChart").selectAll("*").remove();
                         chart.unselect(['Tiempo promedio en s','background']);
                         msgSelection = [];
                     }
-                    else{
-                        console.log(2)
-                        socket.emit(INITIALIZE_STACKED,getQueryString());
-                        if (d.x === daySelected) {
-                            zoom = undefined;
-                            lineChart(dataX,dataY,dataZ);
-                        }
-                        else {
-                            lineChart(dataX,dataY,dataZ,daySelected);
-                        }
+                    if (d.x === daySelected) {
+                        zoom = undefined;
+                        // socket.emit(INITIALIZE_STACKED,getQueryString());
+                        lineChart(dataX,dataY,dataZ);
+                    }
+                    else {
+                        lineChart(dataX,dataY,dataZ,daySelected);
                     }
                 }
-                else if (!prev) {
-                    console.log(3)
-                    console.log(prev)
+                else {
                     socket.emit(INITIALIZE_STACKED,getQueryString());
                     lineChart(dataX,dataY,dataZ,d.x);
                 }
