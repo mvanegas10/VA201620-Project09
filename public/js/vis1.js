@@ -154,7 +154,6 @@ function lineChart(dataX, dataY, dataZ, daySelected) {
                         msgSelection = [];
                     }
                     if (d.x === daySelected) {
-                        zoom = undefined;
                         socket.emit(GET_AVG," weekday = " + dataZ[d.x]);
                         lineChart(dataX,dataY,dataZ);
                     }
