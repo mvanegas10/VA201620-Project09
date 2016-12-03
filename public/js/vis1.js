@@ -135,6 +135,7 @@ function lineChart(dataX, dataY, dataZ, daySelected) {
                     else return "#e5f5f9";
                 }
                 else if (daySelected && dataZ[d.index] === dataZ[daySelected])  return "#4d004b";
+                else if (d.id && d.id === 'promedio')  return "#4d004b";
                 else return color;
             },
             onclick: function (d) {
@@ -190,6 +191,10 @@ function lineChart(dataX, dataY, dataZ, daySelected) {
                 },
                 name: function (name, ratio, id, index) {
                     if (name === 'background') return "Día de la semana";
+                    else if (name === 'promedio'){
+                        if (daySelected !== undefined) return "Promedio de los días " + giveDayString(dataZ[daySelected]);
+                        else return "Promedio";
+                    }
                     else return name;
                 },
                 value: function (value, ratio, id, index) {
