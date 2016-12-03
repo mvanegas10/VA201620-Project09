@@ -12,6 +12,11 @@ var chart;
 var chart1;
 var msgSelection = [];
 var zoom;
+//violin plot
+var duracionEstado= [];
+var diaSemana =[];
+var tipoEstado = [];
+
 
 // ------------------------------------------------------
 // MANAGE CONNECTION WITH BACKEND
@@ -28,7 +33,7 @@ socket.on(SHOW_DAYS, function (data) {
         dataX.push((dataDays.length-1) - i);
     });
     var dataY = dataDays.map(function (d) {return d.duration;});
-    dataY.unshift('Tiempo promedio en s');    
+    dataY.unshift('Tiempo promedio en s');
     var dataZ = dataDays.map(function (d) {return d.weekday;});
     lineChart(dataX, dataY, dataZ);
 });
@@ -46,7 +51,7 @@ socket.on(SHOW_ESTADOS, function (data) {
 })
 
 socket.on(SHOW_TICKETS, function (data) {
-    console.log(":! This is a " + SHOW_TICKETS + " request...");    
+    console.log(":! This is a " + SHOW_TICKETS + " request...");
     dataTickets = data.map(function (d) {return d.ticket_id;});
 
     dataIncidentes.forEach(function (d) {
@@ -70,7 +75,7 @@ socket.on(SHOW_TICKETS, function (data) {
     })
 
     stackedBarChart(dataFinal);
-       
+
 });
 
 // ------------------------------------------------------
@@ -79,7 +84,7 @@ socket.on(SHOW_TICKETS, function (data) {
 function lineChart(dataX, dataY, dataZ, daySelected) {
     var arr = dataY.slice(0);
     arr.splice(0,1);
-    arr = arr.map(Number);    
+    arr = arr.map(Number);
     dataBG = Array.apply(null, Array(dataY.length)).map(Number.prototype.valueOf,Number(d3.max(d3.values(arr))));
     dataBG[0] = 'background';
 
@@ -111,15 +116,15 @@ function lineChart(dataX, dataY, dataZ, daySelected) {
             color: function (color,d) {
                 if (d.index == 236) return '#810f7c';
                 else if (d.id && d.id === 'background') {
-                    if (daySelected && d.index === daySelected) return "#4d004b"; 
+                    if (daySelected && d.index === daySelected) return "#4d004b";
                     else if (dataZ[d.index] == 6 || dataZ[d.index] == 0) return "#99d8c9";
                     else return "#e5f5f9";
-                } 
-                else if (daySelected && dataZ[d.index] === dataZ[daySelected])  return "#4d004b";  
+                }
+                else if (daySelected && dataZ[d.index] === dataZ[daySelected])  return "#4d004b";
                 else return color;
             },
             onclick: function (d) {
-                chart1 = undefined;  
+                chart1 = undefined;
                 var prev = false;
                 var it = 0;
                 msgSelection.forEach(function(i) {
@@ -134,7 +139,7 @@ function lineChart(dataX, dataY, dataZ, daySelected) {
                         if(selected.x === d.x) {
                             delete msgSelection[i];
                             cant--;
-                        }                        
+                        }
                     });
                     console.log(cant);
                     if(cant <= 0){
@@ -167,15 +172,15 @@ function lineChart(dataX, dataY, dataZ, daySelected) {
         },
         tooltip: {
             format: {
-                title: function (d) { 
+                title: function (d) {
                     if (d == 236) return 'HOY';
                     else return "Hace " + Math.round(dataDays.length - 1 - d)  + " días";
                 },
                 name: function (name, ratio, id, index) {
                     if (name === 'background') return "Día de la semana";
-                    else return name; 
+                    else return name;
                 },
-                value: function (value, ratio, id, index) { 
+                value: function (value, ratio, id, index) {
                     if (id === 'background') {
                         if (dataZ[index] == 1) return "Lunes"
                         else if (dataZ[index] == 2) return "Martes";
@@ -184,7 +189,7 @@ function lineChart(dataX, dataY, dataZ, daySelected) {
                         else if (dataZ[index] == 5) return "Viernes";
                         else if (dataZ[index] == 6) return "Sábado";
                         else if (dataZ[index] == 0) return "Domingo";
-                    } 
+                    }
                     else return Math.round(Number(value)*100)/100;
                 }
             }
@@ -199,7 +204,7 @@ function lineChart(dataX, dataY, dataZ, daySelected) {
                 label: 'Día',
                 tick: {
                     count: 50,
-                    format: function (x) { 
+                    format: function (x) {
                         if (Math.round(dataDays.length - 1 - x) < 7) return "La semana pasada";
                         else if (Math.round(dataDays.length - 1 - x) > 30 && Math.round(dataDays.length - 1 - x) <= 60) return "El mes pasado";
                         else if (Math.round(dataDays.length - 1 - x) > 60 && Math.round(dataDays.length - 1 - x) <= 90) return "Hace dos meses";
@@ -210,10 +215,10 @@ function lineChart(dataX, dataY, dataZ, daySelected) {
                         else if (Math.round(dataDays.length - 1 - x) > 210 && Math.round(dataDays.length - 1 - x) <= 240) return "Hace siete meses";
                         else return "Hace " + Math.round(dataDays.length - 1 - x)  + " días";
                     }
-                }            
+                }
             },
             y: {
-                label: 'Tiempo promedio en s',       
+                label: 'Tiempo promedio en s',
             }
         },
         legend: {
@@ -245,7 +250,7 @@ function stackedBarChart(columnsData) {
         },
         color: {
             pattern: ['#1f77b4', '#aec7e8', '#ff7f0e', '#ffbb78', '#2ca02c', '#98df8a', '#d62728', '#ff9896', '#9467bd', '#c5b0d5', '#8c564b', '#c49c94', '#e377c2', '#f7b6d2', '#7f7f7f', '#c7c7c7', '#bcbd22', '#dbdb8d', '#17becf', '#9edae5']
-        },        
+        },
         axis: {
             rotated: true,
             x: {
@@ -255,11 +260,11 @@ function stackedBarChart(columnsData) {
                 tick: {
                     culling: {
                         max: 40
-                    }  
-                }            
+                    }
+                }
             },
             y: {
-                label: 'Tiempo de atención (en segundos)',            
+                label: 'Tiempo de atención (en segundos)',
             }
         },
         legend: {
