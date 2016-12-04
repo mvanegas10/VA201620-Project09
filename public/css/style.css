@@ -64,3 +64,19 @@ p {
   line-height: 20px;
   padding: 0cm 0cm 0cm 0cm;
 }
+table
+{
+    border: 1px solid #ccc;
+    border-collapse: collapse;
+}
+table th
+{
+    background-color: #F7F7F7;
+    color: #333;
+    font-weight: bold;
+}
+table th, table td
+{
+    padding: 5px;
+    border-color: #ccc;
+}

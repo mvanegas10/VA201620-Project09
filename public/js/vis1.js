@@ -89,7 +89,7 @@ socket.on(SHOW_TICKETS, function (data) {
     })
 
     stackedBarChart(dataFinal);
-    scatterplot();
+    //scatterplot();
 
 });
 
