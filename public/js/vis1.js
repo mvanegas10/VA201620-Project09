@@ -225,7 +225,7 @@ function lineChart(dataX, dataY, dataZ, daySelected) {
 			}
 		},
 		zoom: {
-			onzoomend: function (domain) { zoom = domain;},
+			onzoomend: function (domain) {zoom = domain;},
 			enabled: true,
 			rescale: true
 		},
@@ -241,8 +241,7 @@ function lineChart(dataX, dataY, dataZ, daySelected) {
 				x: {
 					show: false
 				}
-			},
-		    onbrush: function( domain ) { zoom = domain;} 
+			}
 		},
 		axis: {
 			x: {
@@ -298,28 +297,7 @@ function stackedBarChart(columnsData) {
 				},
 			},
 			color: {
-				pattern: [
-							"#4bcdeb",
-							"#ee9e54",
-							"#6fb9f1",
-							"#ddb851",
-							"#e792e7",
-							"#69e4ad",
-							"#e6a7e9",
-							"#d6e37a",
-							"#b4aaf2",
-							"#7fc87b",
-							"#f497c0",
-							"#55ebe1",
-							"#f99672",
-							"#6bcfb9",
-							"#f68d92",
-							"#b6e99e",
-							"#f19c8f",
-							"#afb864",
-							"#e8b17c",
-							"#e5d88f"
-						]
+				pattern: ['#1f77b4', '#aec7e8', '#ff7f0e', '#ffbb78', '#2ca02c', '#98df8a', '#d62728', '#ff9896', '#9467bd', '#c5b0d5', '#8c564b', '#c49c94', '#e377c2', '#f7b6d2', '#7f7f7f', '#c7c7c7', '#bcbd22', '#dbdb8d', '#17becf', '#9edae5']
 			},
 			axis: {
 				rotated: true,
@@ -382,13 +360,13 @@ function scatterplot(dataScatter) {
 		axis: {
 			x: {
         type: 'category',
-				label: 'Sepal.Width',
+				label: 'Estados',
 				tick: {
 					fit: false
 				}
 			},
 			y: {
-				label: 'Petal.Width'
+				label: 'Tiempo (minutos)'
 			}
 		}
 	});
