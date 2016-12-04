@@ -225,7 +225,7 @@ function lineChart(dataX, dataY, dataZ, daySelected) {
 			}
 		},
 		zoom: {
-			onzoomend: function (domain) {zoom = domain;},
+			onzoomend: function (domain) { zoom = domain;},
 			enabled: true,
 			rescale: true
 		},
@@ -241,7 +241,8 @@ function lineChart(dataX, dataY, dataZ, daySelected) {
 				x: {
 					show: false
 				}
-			}
+			},
+		    onbrush: function( domain ) { zoom = domain;} 
 		},
 		axis: {
 			x: {
