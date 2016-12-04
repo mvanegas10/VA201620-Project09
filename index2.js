@@ -100,6 +100,8 @@ function getDays(socketId) {
     var query = "SELECT DATE(time_finish_current) as day, AVG(duration) as duration, DAYOFWEEK(time_finish_current)-1 as weekday FROM tickets GROUP BY day, weekday ORDER BY day;";
     connection.query(query, function(err, rows) {
       connection.release();
+      console.log(query);
+
       if(err) {
         return console.error('Error running query ' + query, err);
       }
@@ -195,6 +197,7 @@ function getAverage(socketId, table,msg) {
       return console.error('Error fetching client from pool', err);
     }
     if(msg==null){
+      //window.alert(msg);
     var query = "SELECT AVG(duration) FROM (SELECT duration, DAYOFWEEK(time_finish_current)-1 AS weekday FROM tickets) query ; " ;
     }
     else {
