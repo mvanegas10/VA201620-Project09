@@ -49,41 +49,41 @@ io.on('connection', function(socket) {
     console.log(': Socket connection from client ' + socket.id);
 
     if (!clients[socket.id]) {
-        console.log(':! This is a new connection request... ');
+        console.log(':! This is a new connection request...  CLIENTE');
         clients[socket.id] = socket;
     }
     socket.on('disconnect', function() {
-        console.log(':! This is a disconnection request...');
+        console.log(':! This is a disconnection request... DESCO');
         delete clients[socket.id];
     });
 
     socket.on(glbs.INITIALIZE_DAYS, function(msg) {
-        console.log(':! This is a ' + glbs.INITIALIZE + ' request...')
+        console.log(':! This is a ' + glbs.INITIALIZE + ' request...DIAS' )
         getDays(socket.id);
     });
 
     socket.on(glbs.INITIALIZE_STACKED, function(msg) {
-        console.log(':! This is a ' + glbs.INITIALIZE + ' request...')
+        console.log(':! This is a ' + glbs.INITIALIZE + ' request... INICIAST')
         getData(socket.id, 'tickets', msg);
     });
 
     socket.on(glbs.GET_ESTADOS, function(msg) {
-        console.log(':! This is a ' + glbs.GET_ESTADOS + ' request...')
+        console.log(':! This is a ' + glbs.GET_ESTADOS + ' request... ESTADOS')
         getEstados(socket.id, 'tickets', msg);
     });
 
     socket.on(glbs.GET_TICKETS, function(msg) {
-        console.log(':! This is a ' + glbs.GET_TICKETS + ' request...')
+        console.log(':! This is a ' + glbs.GET_TICKETS + ' request... TIQUETES')
         getTickets(socket.id, 'tickets', msg);
     });
 
     socket.on(glbs.GET_AVG, function(msg) {
-        console.log(':! This is a ' + glbs.GET_AVG + ' request...')
+        console.log(':! This is a ' + glbs.GET_AVG + ' request... AVERAGE')
         getAverage(socket.id, msg);
     });
 
     socket.on(glbs.GET_STATE_AVG, function(msg) {
-        console.log(':! This is a ' + glbs.GET_STATE_AVG + ' request...')
+        console.log(':! This is a ' + glbs.GET_STATE_AVG + ' request...AVERAGE ESTADOS')
         getStateAverage(socket.id, msg);
     });
 });
