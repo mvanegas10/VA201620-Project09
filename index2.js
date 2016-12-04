@@ -37,7 +37,7 @@ var pool  = mysql.createPool({
   connectionLimit : 10,
   host            : 'localhost',
   user            : 'root',
-  password        : 'Mayo301995',
+  password        : 'Uniandes2016_',
   database        : 'visual',
   port:3306
 });

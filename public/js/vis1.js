@@ -352,6 +352,9 @@ function scatterplot(dataScatter) {
 			columns: dataScatter,
 			type: 'scatter'
 		},
+		legend: {
+        show: false
+    },
 		axis: {
 			rotated:true,
 			x: {
