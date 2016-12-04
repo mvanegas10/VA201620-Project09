@@ -58,7 +58,7 @@ io.on('connection', function(socket) {
     });
 
     socket.on(glbs.INITIALIZE_DAYS, function(msg) {
-        console.log(':! This is a ' + glbs.INITIALIZE + ' request...DIAS' )
+        console.log(':! This is a ' + glbs.INITIALIZE + ' request...DIASINI' )
         getDays(socket.id);
     });
 

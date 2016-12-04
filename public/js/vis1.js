@@ -18,7 +18,7 @@ var zoom;
 var duracionEstado= [];
 var diaSemana =[];
 var tipoEstado = [];
-
+var cincoDiasSeleccionados = [];
 
 // ------------------------------------------------------
 // MANAGE CONNECTION WITH BACKEND
@@ -29,7 +29,7 @@ socket.emit(INITIALIZE_DAYS);
 socket.emit(INITIALIZE_STACKED,"");
 
 socket.on(SHOW_DAYS, function (data) {
-    console.log(":! This is a " + SHOW_DAYS + " request...");
+    console.log(":! This is a " + SHOW_DAYS + " request...SHOW");
     dataDays = data;
     var dataX = ['x'];
     dataDays.forEach(function (d,i) {
@@ -61,7 +61,7 @@ socket.on(SHOW_ESTADOS, function (data) {
 socket.on(SHOW_STATE_AVG, function (data) {
     console.log(":! This is a " + SHOW_STATE_AVG + " request...");
     dataPromEstados = data;
-    scatterplot(data);
+    //scatterplot(data);
 })
 
 socket.on(SHOW_TICKETS, function (data) {
@@ -89,7 +89,7 @@ socket.on(SHOW_TICKETS, function (data) {
     })
 
     stackedBarChart(dataFinal);
-    //scatterplot();
+    scatterplot();
 
 });
 
@@ -292,6 +292,9 @@ function stackedBarChart(columnsData) {
                 groups: [
                     dataEstados
                 ],
+                onclick: function (k) {
+                  console.log(k.value);
+                },
             },
             color: {
                 pattern: ['#1f77b4', '#aec7e8', '#ff7f0e', '#ffbb78', '#2ca02c', '#98df8a', '#d62728', '#ff9896', '#9467bd', '#c5b0d5', '#8c564b', '#c49c94', '#e377c2', '#f7b6d2', '#7f7f7f', '#c7c7c7', '#bcbd22', '#dbdb8d', '#17becf', '#9edae5']
@@ -407,3 +410,69 @@ function getQueryString() {
     });
     return answer;
 }
+function GenerateTableTipo(data) {
+
+
+           //Create a HTML Table element.
+           var table = document.createElement("TABLE");
+           table.border = "1";
+
+
+           //Get the count of columns.
+           var columnCount = data[0].length;
+
+           //Add the header row.
+           var row = table.insertRow(-1);
+           for (var i = 0; i < columnCount; i++) {
+               var headerCell = document.createElement("TH");
+               headerCell.innerHTML = data[0][i];
+               row.appendChild(headerCell);
+           }
+
+           //Add the data rows.
+           for (var i = 1; i < data.length; i++) {
+               row = table.insertRow(-1);
+               for (var j = 0; j < columnCount; j++) {
+                   var cell = row.insertCell(-1);
+                   cell.innerHTML = data[i][j];
+               }
+           }
+
+     var dvTable = document.getElementById("dvTable");
+
+           dvTable.innerHTML = "";
+           dvTable.appendChild(table);
+       }
+    function GenerateTableEstados(data) {
+
+
+           //Create a HTML Table element.
+           var table = document.createElement("TABLE");
+           table.border = "1";
+
+
+           //Get the count of columns.
+           var columnCount = data[0].length;
+
+           //Add the header row.
+           var row = table.insertRow(-1);
+           for (var i = 0; i < columnCount; i++) {
+               var headerCell = document.createElement("TH");
+               headerCell.innerHTML = data[0][i];
+               row.appendChild(headerCell);
+           }
+
+           //Add the data rows.
+           for (var i = 1; i < data.length; i++) {
+               row = table.insertRow(-1);
+               for (var j = 0; j < columnCount; j++) {
+                   var cell = row.insertCell(-1);
+                   cell.innerHTML = data[i][j];
+               }
+           }
+
+     var dvTable = document.getElementById("dvTable2");
+
+           dvTable.innerHTML = "";
+           dvTable.appendChild(table);
+       }
