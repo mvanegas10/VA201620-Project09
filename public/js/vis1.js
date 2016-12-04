@@ -381,6 +381,7 @@ function scatterplot(dataScatter) {
 		},
 		axis: {
 			x: {
+        type: 'category',
 				label: 'Sepal.Width',
 				tick: {
 					fit: false
