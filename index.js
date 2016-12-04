@@ -158,8 +158,26 @@ function getTickets(socketId, table,msg) {
   });
 }
 
+function getStateAverage(socketId, msg) {
+  pool.connect(function(err, client, done) {
+    if(err) {
+      return console.error('Error fetching client from pool', err);
+    }
+    var query = "SELECT current_state, AVG(duration) FROM (SELECT current_state, duration, EXTRACT(dow FROM time_finish_current) AS weekday FROM tickets) query WHERE " + msg + " GROUP BY current_state;"
+    client.query(query, function(err, result) {
+      done();
+      console.log(query);
+
+      if(err) {
+        return console.error('Error running query ' + query, err);
+      }
+      else clients[socketId].emit(glbs.SHOW_STATE_AVG, result.rows);
+    });
+  });    
+}
+
 function getAverage(socketId, msg) {
-    pool.connect(function(err, client, done) {
+  pool.connect(function(err, client, done) {
     if(err) {
       return console.error('Error fetching client from pool', err);
     }

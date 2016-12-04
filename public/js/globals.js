@@ -6,12 +6,15 @@ var GET_ESTADOS = 'GET_ESTADOS';
 var GET_TICKETS = 'GET_TICKETS';
 var SHOW_ESTADOS = 'SHOW_ESTADOS';
 var SHOW_TICKETS = 'SHOW_TICKETS';
+var GET_AVG = 'GET_AVG';
+var SHOW_AVG = 'SHOW_AVG';
+var SHOW_STATE_AVG = 'SHOW_STATE_AVG';
+var GET_STATE_AVG = 'GET_STATE_AVG';
 //violin plot
 var  INITIALIZE_DAYS_VIOLIN =  'INITIALIZE_DAYS_VIOLIN';
 var INITIALIZE_TIME_STATE  = 'INITIALIZE_TIME_STATE';
 var INITIALIZE_STATES_VIOLIN =  'INITIALIZE_STATES_VIOLIN';
-var GET_AVG = 'GET_AVG';
-var SHOW_AVG = 'SHOW_AVG';
+
 
 try {
 	module.exports.INITIALIZE_DAYS = INITIALIZE_DAYS;
@@ -27,6 +30,8 @@ try {
 	module.exports.INITIALIZE_STATES_VIOLIN = INITIALIZE_STATES_VIOLIN;
     module.exports.GET_AVG = GET_AVG;
     module.exports.SHOW_AVG = SHOW_AVG;
+    module.exports.SHOW_STATE_AVG = SHOW_STATE_AVG;
+    module.exports.GET_STATE_AVG = GET_STATE_AVG;
     console.log('We are running on the server...');
 } catch(err) {
     console.log('We are running on the browser...');

@@ -272,7 +272,7 @@ function stackedBarChart(columnsData) {
         chart1 = c3.generate({
             size: {
                 height: 500,
-                width: 1000
+                width: 700
             },
             bindto: '#stackedBarChart',
             data: {
@@ -301,9 +301,6 @@ function stackedBarChart(columnsData) {
                     label: 'Tiempo de atención (en segundos)',
                 }
             },
-            legend: {
-                position: 'right',
-            },
             grid: {
                 y: {
                     lines: [{value:0}]
@@ -324,6 +321,60 @@ function stackedBarChart(columnsData) {
     }
 }
 
+function scatterplot(columnsData) {
+    if(columnsData.length !== 0){
+        chart1 = c3.generate({
+            size: {
+                height: 500,
+                width: 700
+            },
+            bindto: '#scatterplot',
+            data: {
+                columns: columnsData,
+                type: 'bar',
+                groups: [
+                    dataEstados
+                ],
+            },
+            color: {
+                pattern: ['#1f77b4', '#aec7e8', '#ff7f0e', '#ffbb78', '#2ca02c', '#98df8a', '#d62728', '#ff9896', '#9467bd', '#c5b0d5', '#8c564b', '#c49c94', '#e377c2', '#f7b6d2', '#7f7f7f', '#c7c7c7', '#bcbd22', '#dbdb8d', '#17becf', '#9edae5']
+            },
+            axis: {
+                rotated: true,
+                x: {
+                    label: 'Tickets',
+                    type: 'category',
+                    categories: dataTickets,
+                    tick: {
+                        culling: {
+                            max: 40
+                        }
+                    }
+                },
+                y: {
+                    label: 'Tiempo de atención (en segundos)',
+                }
+            },
+            grid: {
+                y: {
+                    lines: [{value:0}]
+                }
+            }
+        });
+
+        var firstLegend = d3.select(".c3-legend-item");
+        var legendCon = d3.select(firstLegend.node().parentNode);
+        var legendX = parseInt(firstLegend.select('text').attr('x'));
+        var legendY = parseInt(firstLegend.select('text').attr('y'));
+        legendCon
+          .append('text')
+          .text('Estado del incidente')
+          .attr('x', legendX + 150)
+          .attr('y', legendY - 50)
+          .style('font-size', '16px');
+    }
+}
+
 // ADDITIONAL FUNCTIONS
 
 function giveDayString(num) {
@@ -334,14 +385,6 @@ function giveDayString(num) {
     else if (num == 5) return "viernes";
     else if (num == 6) return "sábado";
     else if (num == 0) return "domingo";
-}
-
-function agregar() {
-    chart1.groups([dataEstados]);
-}
-
-function desagregar() {
-    chart1.groups([]);
 }
 
 function getQueryString() {
