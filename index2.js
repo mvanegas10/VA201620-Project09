@@ -185,7 +185,7 @@ function getStateAverage(socketId, table,msg) {
       if(err) {
         return console.error('Error running query ' + query, err);
       }
-      else clients[socketId].emit(glbs.SHOW_TICKETS, rows);
+      else clients[socketId].emit(glbs.SHOW_AVG, rows);
     });
   });
 }
@@ -198,16 +198,17 @@ function getAverage(socketId, table,msg) {
     var query = "SELECT AVG(duration) FROM (SELECT duration, DAYOFWEEK(time_finish_current)-1 AS weekday FROM tickets) query ; " ;
     }
     else {
+      window.alert(msg);
       var query = "SELECT AVG(duration) FROM (SELECT duration, DAYOFWEEK(time_finish_current)-1 AS weekday FROM tickets) query WHERE " + msg + ";";
     }
     connection.query(query, function(err, rows) {
       connection.release();
-      console.log(query);
+      console.log(query+ "NO RRR");
 
       if(err) {
         return console.error('Error running query ' + query, err);
       }
-      else clients[socketId].emit(glbs.SHOW_TICKETS, rows);
+      else clients[socketId].emit(glbs.SHOW_STATE_AVG, rows);
     });
   });
 }
