@@ -7,6 +7,7 @@ var dataDays = [];
 var dataIncidentes = [];
 var dataTickets = {};
 var dataEstados = [];
+var dataPromEstados = [];
 var timeTickets = [];
 var avg = 0.0;
 var chart;
@@ -55,6 +56,12 @@ socket.on(SHOW_ESTADOS, function (data) {
     console.log(":! This is a " + SHOW_ESTADOS + " request...");
     dataEstados = data.map(function (d) {return d.current_state;});
     socket.emit(GET_TICKETS,getQueryString());
+})
+
+socket.on(SHOW_STATE_AVG, function (data) {
+    console.log(":! This is a " + SHOW_STATE_AVG + " request...");
+    dataPromEstados = data;
+    scatterplot(data);
 })
 
 socket.on(SHOW_TICKETS, function (data) {
@@ -165,15 +172,18 @@ function lineChart(dataX, dataY, dataZ, daySelected) {
                     if (d.x === daySelected) {
                         socket.emit(GET_AVG," weekday = " + dataZ[d.x]);
                         lineChart(dataX,dataY,dataZ);
+                        socket.emit(GET_STATE_AVG,getNecesaryWeekday());
                         socket.emit(INITIALIZE_STACKED,getQueryString());
                     }
                     else {
                         lineChart(dataX,dataY,dataZ,daySelected);
+                        socket.emit(GET_STATE_AVG,getNecesaryWeekday());
                         socket.emit(INITIALIZE_STACKED,getQueryString());
                     }
                 }
                 else {
                     socket.emit(GET_AVG," weekday = " + dataZ[d.x]);
+                    socket.emit(GET_STATE_AVG,getNecesaryWeekday());
                     socket.emit(INITIALIZE_STACKED,getQueryString());
                     lineChart(dataX,dataY,dataZ,d.x);
                 }
@@ -321,58 +331,8 @@ function stackedBarChart(columnsData) {
     }
 }
 
-function scatterplot(columnsData) {
-    if(columnsData.length !== 0){
-        chart1 = c3.generate({
-            size: {
-                height: 500,
-                width: 700
-            },
-            bindto: '#scatterplot',
-            data: {
-                columns: columnsData,
-                type: 'bar',
-                groups: [
-                    dataEstados
-                ],
-            },
-            color: {
-                pattern: ['#1f77b4', '#aec7e8', '#ff7f0e', '#ffbb78', '#2ca02c', '#98df8a', '#d62728', '#ff9896', '#9467bd', '#c5b0d5', '#8c564b', '#c49c94', '#e377c2', '#f7b6d2', '#7f7f7f', '#c7c7c7', '#bcbd22', '#dbdb8d', '#17becf', '#9edae5']
-            },
-            axis: {
-                rotated: true,
-                x: {
-                    label: 'Tickets',
-                    type: 'category',
-                    categories: dataTickets,
-                    tick: {
-                        culling: {
-                            max: 40
-                        }
-                    }
-                },
-                y: {
-                    label: 'Tiempo de atención (en segundos)',
-                }
-            },
-            grid: {
-                y: {
-                    lines: [{value:0}]
-                }
-            }
-        });
-
-        var firstLegend = d3.select(".c3-legend-item");
-        var legendCon = d3.select(firstLegend.node().parentNode);
-        var legendX = parseInt(firstLegend.select('text').attr('x'));
-        var legendY = parseInt(firstLegend.select('text').attr('y'));
-        legendCon
-          .append('text')
-          .text('Estado del incidente')
-          .attr('x', legendX + 150)
-          .attr('y', legendY - 50)
-          .style('font-size', '16px');
-    }
+function scatterplot(dataScatter) {
+    console.log(dataScatter);
 }
 
 // ADDITIONAL FUNCTIONS
@@ -385,6 +345,24 @@ function giveDayString(num) {
     else if (num == 5) return "viernes";
     else if (num == 6) return "sábado";
     else if (num == 0) return "domingo";
+}
+
+function getDataDays() {
+    var answer;
+    msgSelection.forEach(function (d) {
+        if(answer === undefined) answer = " weekday = " + dataDays[d.x]["weekday"];
+        else answer += " OR weekday = " + dataDays[d.x]["weekday"];
+    });
+    return answer;
+}
+
+function getNecesaryWeekday() {
+    var answer;
+    msgSelection.forEach(function (d) {
+        if(answer === undefined) answer = " weekday = " + dataDays[d.x]["weekday"];
+        else answer += " OR weekday = " + dataDays[d.x]["weekday"];
+    });
+    return answer;
 }
 
 function getQueryString() {

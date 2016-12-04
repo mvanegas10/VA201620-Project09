@@ -81,6 +81,11 @@ io.on('connection', function(socket) {
         console.log(':! This is a ' + glbs.GET_AVG + ' request...')
         getAverage(socket.id, msg);
     });
+
+    socket.on(glbs.GET_STATE_AVG, function(msg) {
+        console.log(':! This is a ' + glbs.GET_STATE_AVG + ' request...')
+        getStateAverage(socket.id, msg);
+    });
 });
 
 // ------------------------------------------------------
@@ -163,7 +168,7 @@ function getStateAverage(socketId, msg) {
     if(err) {
       return console.error('Error fetching client from pool', err);
     }
-    var query = "SELECT current_state, AVG(duration) FROM (SELECT current_state, duration, EXTRACT(dow FROM time_finish_current) AS weekday FROM tickets) query WHERE " + msg + " GROUP BY current_state;"
+    var query = "SELECT current_state as state, AVG(duration) as duration FROM (SELECT current_state, duration, EXTRACT(dow FROM time_finish_current) AS weekday FROM tickets) query WHERE " + msg + " GROUP BY current_state;"
     client.query(query, function(err, result) {
       done();
       console.log(query);
