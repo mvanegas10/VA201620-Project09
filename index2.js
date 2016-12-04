@@ -37,7 +37,7 @@ var pool  = mysql.createPool({
   connectionLimit : 10,
   host            : 'localhost',
   user            : 'root',
-  password        : 'Uniandes2016_',
+  password        : 'Mayo301995',
   database        : 'visual',
   port:3306
 });
@@ -59,6 +59,7 @@ io.on('connection', function(socket) {
 
     socket.on(glbs.INITIALIZE_DAYS, function(msg) {
         console.log(':! This is a ' + glbs.INITIALIZE + ' request...DIASINI' )
+        console.log()
         getDays(socket.id);
     });
 

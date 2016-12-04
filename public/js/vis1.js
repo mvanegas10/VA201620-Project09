@@ -9,6 +9,7 @@ var dataTickets = {};
 var dataEstados = [];
 var dataPromEstados = [];
 var timeTickets = [];
+var tiempoID=[];
 var avg = 0.0;
 var chart;
 var chart1;
@@ -24,7 +25,6 @@ var cincoDiasSeleccionados = [];
 // MANAGE CONNECTION WITH BACKEND
 // ------------------------------------------------------
 
-socket.emit(GET_AVG," 1=1");
 socket.emit(INITIALIZE_DAYS);
 socket.emit(INITIALIZE_STACKED,"");
 
@@ -41,11 +41,6 @@ socket.on(SHOW_DAYS, function (data) {
 	lineChart(dataX, dataY, dataZ);
 });
 
-socket.on(SHOW_AVG, function (data) {
-	console.log(":! This is a " + SHOW_AVG + " request...");
-	avg = data[0].avg;
-});
-
 socket.on(SHOW_DATA, function (data) {
 	console.log(":! This is a " + SHOW_DATA + " request...");
 	dataIncidentes = data;
@@ -58,16 +53,11 @@ socket.on(SHOW_ESTADOS, function (data) {
 	socket.emit(GET_TICKETS,getQueryString());
 })
 
-socket.on(SHOW_STATE_AVG, function (data) {
-	console.log(":! This is a " + SHOW_STATE_AVG + " request...");
-	dataPromEstados = data;
-	scatterplot(dataPromEstados);
-})
-
 socket.on(SHOW_TICKETS, function (data) {
 	console.log(":! This is a " + SHOW_TICKETS + " request...");
 	dataTickets = data.map(function (d) {return d.ticket_id;});
 
+//stackedBarChart
 	dataIncidentes.forEach(function (d) {
 		if (timeTickets[d.current_state] === undefined) {
 			timeTickets[d.current_state] = {};
@@ -87,8 +77,27 @@ socket.on(SHOW_TICKETS, function (data) {
 		})
 		dataFinal.push(nums);
 	})
-
 	stackedBarChart(dataFinal);
+
+	//scatterplot
+	dataIncidentes.forEach(function (d) {
+		if (tiempoID[d.ticket_id] === undefined) {
+			tiempoID[d.ticket_id] = {};
+		}
+		tiempoID[d.ticket_id][d.current_state] = d.duration;
+	})
+	 var dataScatter=[];
+	 dataTickets.forEach(function (d) {
+ 		var def = [];
+ 		def.push(d);
+ 		dataEstados.forEach(function (s) {
+ 			if (tiempoID[d][s] === undefined) tiempoID[d][s] = 0.0;
+ 			else tiempoID[d][s] = +tiempoID[d][s];
+ 			def.push(tiempoID[d][s]);
+ 		})
+ 		dataScatter.push(def);
+ 	})
+	scatterplot(dataScatter);
 });
 
 // ------------------------------------------------------
@@ -165,27 +174,23 @@ function lineChart(dataX, dataY, dataZ, daySelected) {
 					if(cant <= 0){
 						d3.select("#stackedBarChart").html("");
 						d3.select("#stackedBarChart").selectAll("*").remove();
+						d3.select("#scatterplot").html("");
+						d3.select("#scatterplot").selectAll("*").remove();
 						chart.unselect(['Tiempo promedio en s','background']);
 						msgSelection = [];
 					}
 					if (d.x === daySelected) {
-						socket.emit(GET_AVG," weekday = " + dataZ[d.x]);
 						lineChart(dataX,dataY,dataZ);
 						socket.emit(INITIALIZE_STACKED,getQueryString());
-						socket.emit(GET_STATE_AVG,getNecesaryWeekday());
 
 					}
 					else {
 						lineChart(dataX,dataY,dataZ,daySelected);
 						socket.emit(INITIALIZE_STACKED,getQueryString());
-						socket.emit(GET_STATE_AVG,getNecesaryWeekday());
-
 					}
 				}
 				else {
-					socket.emit(GET_AVG," weekday = " + dataZ[d.x]);
 					socket.emit(INITIALIZE_STACKED,getQueryString());
-					socket.emit(GET_STATE_AVG,getNecesaryWeekday());
 					lineChart(dataX,dataY,dataZ,d.x);
 				}
 			}
@@ -329,8 +334,8 @@ function stackedBarChart(columnsData) {
 		legendCon
 		.append('text')
 		.text('Estado del incidente')
-		.attr('x', legendX - 50)
-		.attr('y', legendY - 50)
+		.attr('x', legendX -200)
+		.attr('y', legendY -50)
 		.style('font-size', '16px');
 	}
 }
@@ -344,25 +349,20 @@ function scatterplot(dataScatter) {
 		},
 		bindto: '#scatterplot',
 		data: {
-			xs: {
-				setosa: 'setosa_x',
-				versicolor: 'versicolor_x',
-			},
-			// iris data from R
-			columns: [
-				["setosa_x", 3.5, 3.0, 3.2, 3.1, 3.6, 3.9, 3.4, 3.4, 2.9, 3.1, 3.7, 3.4, 3.0, 3.0, 4.0, 4.4, 3.9, 3.5, 3.8, 3.8, 3.4, 3.7, 3.6, 3.3, 3.4, 3.0, 3.4, 3.5, 3.4, 3.2, 3.1, 3.4, 4.1, 4.2, 3.1, 3.2, 3.5, 3.6, 3.0, 3.4, 3.5, 2.3, 3.2, 3.5, 3.8, 3.0, 3.8, 3.2, 3.7, 3.3],
-				["versicolor_x", 3.2, 3.2, 3.1, 2.3, 2.8, 2.8, 3.3, 2.4, 2.9, 2.7, 2.0, 3.0, 2.2, 2.9, 2.9, 3.1, 3.0, 2.7, 2.2, 2.5, 3.2, 2.8, 2.5, 2.8, 2.9, 3.0, 2.8, 3.0, 2.9, 2.6, 2.4, 2.4, 2.7, 2.7, 3.0, 3.4, 3.1, 2.3, 3.0, 2.5, 2.6, 3.0, 2.6, 2.3, 2.7, 3.0, 2.9, 2.9, 2.5, 2.8],
-				["setosa", 0.2, 0.2, 0.2, 0.2, 0.2, 0.4, 0.3, 0.2, 0.2, 0.1, 0.2, 0.2, 0.1, 0.1, 0.2, 0.4, 0.4, 0.3, 0.3, 0.3, 0.2, 0.4, 0.2, 0.5, 0.2, 0.2, 0.4, 0.2, 0.2, 0.2, 0.2, 0.4, 0.1, 0.2, 0.2, 0.2, 0.2, 0.1, 0.2, 0.2, 0.3, 0.3, 0.2, 0.6, 0.4, 0.3, 0.2, 0.2, 0.2, 0.2],
-				["versicolor", 1.4, 1.5, 1.5, 1.3, 1.5, 1.3, 1.6, 1.0, 1.3, 1.4, 1.0, 1.5, 1.0, 1.4, 1.3, 1.4, 1.5, 1.0, 1.5, 1.1, 1.8, 1.3, 1.5, 1.2, 1.3, 1.4, 1.4, 1.7, 1.5, 1.0, 1.1, 1.0, 1.2, 1.6, 1.5, 1.6, 1.5, 1.3, 1.3, 1.3, 1.2, 1.4, 1.2, 1.0, 1.3, 1.2, 1.3, 1.3, 1.1, 1.3],
-			],
+			columns: dataScatter,
 			type: 'scatter'
 		},
 		axis: {
+			rotated:true,
 			x: {
-        type: 'category',
 				label: 'Estados',
+				type: 'category',
+				categories: dataEstados,
 				tick: {
-					fit: false
+					fit:true,
+					culling: {
+						max: 40
+					}
 				}
 			},
 			y: {
@@ -370,7 +370,7 @@ function scatterplot(dataScatter) {
 			}
 		}
 	});
-	console.log("scatterplot AAAAAAAAAAAAAAAAAAAAAA");
+
 }
 
 // ADDITIONAL FUNCTIONS
