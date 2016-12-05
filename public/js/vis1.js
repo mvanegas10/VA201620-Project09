@@ -380,6 +380,7 @@ function scatterplot(dataScatter) {
 
 }
 
+
 // ADDITIONAL FUNCTIONS
 
 function giveDayString(num) {
