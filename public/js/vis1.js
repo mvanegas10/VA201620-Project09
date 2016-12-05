@@ -10,6 +10,7 @@ var dataEstados = [];
 var dataPromEstados = [];
 var timeTickets = [];
 var tiempoID=[];
+var avgTickets=[];
 var avg = 0.0;
 var chart;
 var chart1;
@@ -27,7 +28,6 @@ var cincoDiasSeleccionados = [];
 
 socket.emit(INITIALIZE_DAYS);
 socket.emit(INITIALIZE_STACKED,"");
-
 socket.on(SHOW_DAYS, function (data) {
 	console.log(":! This is a " + SHOW_DAYS + " request...SHOW");
 	dataDays = data;
@@ -50,7 +50,7 @@ socket.on(SHOW_DATA, function (data) {
 socket.on(SHOW_ESTADOS, function (data) {
 	console.log(":! This is a " + SHOW_ESTADOS + " request...");
 	dataEstados = data.map(function (d) {return d.current_state;});
-	socket.emit(GET_TICKETS,getQueryString());
+	socket.emit(GET_STATE_AVG);
 })
 
 socket.on(SHOW_TICKETS, function (data) {
@@ -98,6 +98,40 @@ socket.on(SHOW_TICKETS, function (data) {
  		dataScatter.push(def);
  	})
 	scatterplot(dataScatter);
+});
+
+socket.on(SHOW_STATE_AVG, function (data) {
+	console.log(":! This is a " + SHOW_STATE_AVG + " request...");
+	dataTickets = data;
+	var def=[];
+	def[0]={};
+	def[1]={};
+	def[2]={};
+	var def2=[];
+	var def3=[];
+	var def4= [];
+	avgTickets=[];
+	def2.push("Maximo")
+	def3.push("Minimo");
+	def4.push("Promedio");
+	dataTickets.forEach(function (d) {
+		dataEstados.forEach(function(s) {
+			if(d.current_state.localeCompare(s)===0)
+			{
+				console.log("Estado"+s);
+				def[0][d.current_state]=d.MaxTime;
+				def2.push(def[0][d.current_state])
+				def[1][d.current_state]=d.MinTime;
+				def3.push(def[1][d.current_state])
+				def[2][d.current_state]=d.avgTime;
+				def4.push(def[2][d.current_state])
+			}
+		})
+	})
+	avgTickets.push(def2);
+	avgTickets.push(def3);
+	avgTickets.push(def4);
+		socket.emit(GET_TICKETS,getQueryString());
 });
 
 // ------------------------------------------------------
@@ -341,7 +375,7 @@ function stackedBarChart(columnsData) {
 }
 // visualizacion scatterplot
 function scatterplot(dataScatter) {
-
+	var columns = dataScatter.concat(avgTickets);
 	var chart2 = c3.generate({
 		size: {
 			height: 500,
@@ -349,8 +383,13 @@ function scatterplot(dataScatter) {
 		},
 		bindto: '#scatterplot',
 		data: {
-			columns: dataScatter,
-			type: 'scatter'
+			columns:columns,
+			type: 'scatter',
+			types:{
+				Maximo: 'step',
+				Minimo: 'area-step',
+				Promedio:'step'
+			}
 		},
 		legend:{
 			show:false

@@ -78,14 +78,9 @@ io.on('connection', function(socket) {
         getTickets(socket.id, 'tickets', msg);
     });
 
-    socket.on(glbs.GET_AVG, function(msg) {
-        console.log(':! This is a ' + glbs.GET_AVG + ' request... AVERAGE')
-        getAverage(socket.id, msg);
-    });
-
     socket.on(glbs.GET_STATE_AVG, function(msg) {
         console.log(':! This is a ' + glbs.GET_STATE_AVG + ' request...AVERAGE ESTADOS')
-        getStateAverage(socket.id, msg);
+        getStateAverage(socket.id);
     });
 });
 
@@ -171,43 +166,15 @@ function getTickets(socketId, table,msg) {
     });
   });
 }
-function getStateAverage(socketId, table,msg) {
+function getStateAverage(socketId) {
   pool.getConnection(function(err, connection) {
     if(err) {
       return console.error('Error fetching client from pool', err);
     }
-    if(msg==null)
-    var query = "SELECT current_state as state, AVG(duration) as duration FROM (SELECT current_state, duration, DAYOFWEEK(time_finish_current)-1 AS weekday FROM tickets) query;  " ;
-    else {
-      var query = "SELECT current_state as state, AVG(duration) as duration FROM (SELECT current_state, duration, DAYOFWEEK(time_finish_current)-1 AS weekday FROM tickets) query WHERE " + msg + " GROUP BY current_state;";
-    }
+    var query = "SELECT current_state, max(TIMESTAMPDIFF(second,time_begin_current,time_finish_current)/60 )as MaxTime,min(TIMESTAMPDIFF(second,time_begin_current,time_finish_current)/60 )as MinTime,avg(TIMESTAMPDIFF(second,time_begin_current,time_finish_current)/60 )as avgTime FROM visual.tickets group by current_state;" ;
     connection.query(query, function(err, rows) {
       connection.release();
       console.log(query);
-
-      if(err) {
-        return console.error('Error running query ' + query, err);
-      }
-      else clients[socketId].emit(glbs.SHOW_AVG, rows);
-    });
-  });
-}
-function getAverage(socketId, table,msg) {
-  pool.getConnection(function(err, connection) {
-    if(err) {
-      return console.error('Error fetching client from pool', err);
-    }
-    if(msg==null){
-      //window.alert(msg);
-    var query = "SELECT AVG(duration) FROM (SELECT duration, DAYOFWEEK(time_finish_current)-1 AS weekday FROM tickets) query ; " ;
-    }
-    else {
-      window.alert(msg);
-      var query = "SELECT AVG(duration) FROM (SELECT duration, DAYOFWEEK(time_finish_current)-1 AS weekday FROM tickets) query WHERE " + msg + ";";
-    }
-    connection.query(query, function(err, rows) {
-      connection.release();
-      console.log(query+ "NO RRR");
 
       if(err) {
         return console.error('Error running query ' + query, err);
