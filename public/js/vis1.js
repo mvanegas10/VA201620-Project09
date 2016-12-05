@@ -387,7 +387,7 @@ function scatterplot(dataScatter) {
 			type: 'scatter',
 			types:{
 				Maximo: 'spline',
-				Minimo: 'area',
+				Minimo: 'spline',
 				Promedio:'spline'
 			}
 		},
