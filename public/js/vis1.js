@@ -386,9 +386,9 @@ function scatterplot(dataScatter) {
 			columns:columns,
 			type: 'scatter',
 			types:{
-				Maximo: 'step',
-				Minimo: 'area-step',
-				Promedio:'step'
+				Maximo: 'spline',
+				Minimo: 'area',
+				Promedio:'spline'
 			}
 		},
 		legend:{
@@ -411,12 +411,39 @@ function scatterplot(dataScatter) {
 			},
 			y: {
 				label: 'Tiempo (minutos)',
-				padding: {bottom: 0},
+				padding: {bottom: 10},
 				min: 0
 			}
 		}
 	});
 
+	function toggle(id) {
+	    chart.toggle(id);
+	}
+		$(".container").empty();
+	d3.select('.container').insert('div', '.scatterplot').attr('class', 'legend').selectAll('div')
+	    .data(['Maximo', 'Minimo', 'Promedio'])
+	  .enter().append('div')
+		.attr('data-id', function(id) {
+						return id;
+			})
+			.html(function(id) {
+			return id;
+			})
+			.each(function(id) {
+			//d3.select(this).append('span').style
+			d3.select(this).append('span').style('background-color', chart2.color(id));
+			})
+			.on('mouseover', function(id) {
+			chart2.focus(id);
+			})
+			.on('mouseout', function(id) {
+			chart2.revert();
+			})
+			.on('click', function(id) {
+			$(this).toggleClass("c3-legend-item-hidden")
+			chart2.toggle(id);
+			});
 }
 
 
