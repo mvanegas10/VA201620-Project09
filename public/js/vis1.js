@@ -23,6 +23,7 @@ var duracionEstado= [];
 var diaSemana =[];
 var tipoEstado = [];
 var cincoDiasSeleccionados = [];
+var dataTable=[]
 
 // ------------------------------------------------------
 // MANAGE CONNECTION WITH BACKEND
@@ -30,6 +31,7 @@ var cincoDiasSeleccionados = [];
 
 socket.emit(INITIALIZE_DAYS);
 socket.emit(INITIALIZE_STACKED,"");
+socket.emit(INITIALIZE_STATES_VIOLIN);
 socket.on(SHOW_DAYS, function (data) {
 	console.log(":! This is a " + SHOW_DAYS + " request...SHOW");
 	dataDays = data;
@@ -48,6 +50,11 @@ socket.on(SHOW_DATA, function (data) {
 	dataIncidentes = data;
 	socket.emit(GET_ESTADOS,getQueryString());
 });
+//timeState,type,datebegining,, ticket_id
+socket.on(INITIALIZE_DAYS_VIOLIN, function (data) {
+	console.log(":! This is a " + INITIALIZE_DAYS_VIOLIN + " request... DATOSTABLA");
+	dataTable = data;
+});
 
 socket.on(SHOW_ESTADOS, function (data) {
 	console.log(":! This is a " + SHOW_ESTADOS + " request...");
@@ -58,6 +65,8 @@ socket.on(SHOW_ESTADOS, function (data) {
 socket.on(SHOW_TICKETS, function (data) {
 	console.log(":! This is a " + SHOW_TICKETS + " request...");
 	dataTickets = data.map(function (d) {return d.ticket_id;});
+
+
 
 //stackedBarChart
 	dataIncidentes.forEach(function (d) {
@@ -502,16 +511,82 @@ function pintarTabla()
 {
 	var data=[];
 	table.forEach(function(s){
-		dataIncidentes.forEach(function(d){
+		dataTable.forEach(function(d){
 			if(s.name.localeCompare(d.ticket_id)===0)
 			{
 				data.push(d);
 			}
 		})
 	})
-	console.log(data);
+	console.log(data[0].ticket_id);
+	var tableTable = document.createElement("TABLE");
+		tableTable.border = "1";
+
+		//Get the count of columns.
+		var headers = ["id_ticket","Current state","Time begin current","Ticket type", "Time in State"]
+		var columnCount = headers.length;
+
+		//Add the header row.
+					 var row = tableTable.insertRow(-1);
+					 for (var i = 0; i < columnCount; i++) {
+							 var headerCell = document.createElement("TH");
+							 headerCell.innerHTML = headers[i];
+							 row.appendChild(headerCell);
+					 }
+
+		//Add the data rows.
+					 for (var i = 1; i < data.length; i++) {
+							 row = tableTable.insertRow(-1);
+							 for (var j = 0; j < columnCount; j++) {
+									 var cell = row.insertCell(-1);
+									 if(j==0)
+									 {
+										 cell.innerHTML = data[i].ticket_id;
+									 }
+									else if(j==1)
+									 {
+										 cell.innerHTML = data[i].current_state;
+									 }
+									 else if(j ==2)
+									 {
+										 cell.innerHTML = data[i].time_begin_current;
+									 }
+									 else if(j ==3)
+									 {
+										 cell.innerHTML = data[i].ticket_typo;
+									 }
+									 else {
+										 cell.innerHTML = data[i].timeState;
+									 }
+							 }
+					 }
+
+
+
+
+					 //create table in html
+					 var dvTable = document.getElementById("dvTable");
+
+			 dvTable.innerHTML = "";
+			 dvTable.appendChild(tableTable);
+
+
+
+
+
+
+
+
+
+
 
 	//USA DATA PARA PINTAR LA TABLA
+}
+
+function pintarTabla2(data)
+{
+	var table = document.createElement("TABLE");
+table.border = "1";
 }
 
 // ADDITIONAL FUNCTIONS
@@ -551,70 +626,4 @@ function getQueryString() {
 		else answer += " OR date(time_begin_current) = '" + dataDays[d.x]["day"].substring(0,10) + "'";
 	});
 	return answer;
-}
-
-function GenerateTableTipo(data) {
-	//Create a HTML Table element.
-	var table = document.createElement("TABLE");
-	table.border = "1";
-
-
-	//Get the count of columns.
-	var columnCount = data[0].length;
-
-	//Add the header row.
-	var row = table.insertRow(-1);
-	for (var i = 0; i < columnCount; i++) {
-		var headerCell = document.createElement("TH");
-		headerCell.innerHTML = data[0][i];
-		row.appendChild(headerCell);
-	}
-
-	//Add the data rows.
-	for (var i = 1; i < data.length; i++) {
-		row = table.insertRow(-1);
-		for (var j = 0; j < columnCount; j++) {
-			var cell = row.insertCell(-1);
-			cell.innerHTML = data[i][j];
-		}
-	}
-
-	var dvTable = document.getElementById("dvTable");
-
-	dvTable.innerHTML = "";
-	dvTable.appendChild(table);
-}
-
-function GenerateTableEstados(data) {
-
-
-	//Create a HTML Table element.
-	var table = document.createElement("TABLE");
-	table.border = "1";
-
-
-	//Get the count of columns.
-	var columnCount = data[0].length;
-
-	//Add the header row.
-	var row = table.insertRow(-1);
-	for (var i = 0; i < columnCount; i++) {
-		var headerCell = document.createElement("TH");
-		headerCell.innerHTML = data[0][i];
-		row.appendChild(headerCell);
-	}
-
-	//Add the data rows.
-	for (var i = 1; i < data.length; i++) {
-		row = table.insertRow(-1);
-		for (var j = 0; j < columnCount; j++) {
-			var cell = row.insertCell(-1);
-			cell.innerHTML = data[i][j];
-		}
-	}
-
-	var dvTable = document.getElementById("dvTable2");
-
-	dvTable.innerHTML = "";
-	dvTable.appendChild(table);
 }

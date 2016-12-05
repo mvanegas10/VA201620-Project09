@@ -37,7 +37,7 @@ var pool  = mysql.createPool({
   connectionLimit : 10,
   host            : 'localhost',
   user            : 'root',
-  password        : 'Mayo301995',
+  password        : 'Uniandes2016_',
   database        : 'visual',
   port:3306
 });
@@ -62,10 +62,14 @@ io.on('connection', function(socket) {
         console.log()
         getDays(socket.id);
     });
-
     socket.on(glbs.INITIALIZE_STACKED, function(msg) {
         console.log(':! This is a ' + glbs.INITIALIZE + ' request... INICIAST')
         getData(socket.id, 'tickets', msg);
+    });
+    socket.on(glbs.INITIALIZE_STATES_VIOLIN, function(msg) {
+        console.log(':! This is a ' + glbs.INITIALIZE_STATES_VIOLIN + ' request...AVERAGE_STATE' )
+        console.log()
+        getStateAverageTable(socket.id);
     });
 
     socket.on(glbs.GET_ESTADOS, function(msg) {
@@ -180,6 +184,23 @@ function getStateAverage(socketId) {
         return console.error('Error running query ' + query, err);
       }
       else clients[socketId].emit(glbs.SHOW_STATE_AVG, rows);
+    });
+  });
+}
+function getStateAverageTable(socketId) {
+  pool.getConnection(function(err, connection) {
+    if(err) {
+      return console.error('Error fetching client from pool', err);
+    }
+    var query = "SELECT ticket_id,current_state,time_begin_current,ticket_typo, TIMESTAMPDIFF(second,time_begin_current,time_finish_current)/60 as timeState FROM tickets;" ;
+    connection.query(query, function(err, rows) {
+      connection.release();
+      console.log(query);
+
+      if(err) {
+        return console.error('Error running query ' + query, err);
+      }
+      else clients[socketId].emit(glbs.INITIALIZE_DAYS_VIOLIN, rows);
     });
   });
 }
