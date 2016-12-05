@@ -322,7 +322,7 @@ function stackedBarChart(columnsData) {
 		chart1 = c3.generate({
 			size: {
 				height: 500,
-				width: 700
+				width: 680
 			},
 			bindto: '#stackedBarChart',
 			data: {
@@ -379,7 +379,7 @@ function scatterplot(dataScatter) {
 	var chart2 = c3.generate({
 		size: {
 			height: 500,
-			width: 700
+			width: 680
 		},
 		bindto: '#scatterplot',
 		data: {
