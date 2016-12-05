@@ -361,6 +361,8 @@ function scatterplot(dataScatter) {
 				label: 'Estados',
 				type: 'category',
 				categories: dataEstados,
+				padding: {left: 0},
+			  min: 0,
 				tick: {
 					fit:true,
 					culling: {
@@ -369,7 +371,9 @@ function scatterplot(dataScatter) {
 				}
 			},
 			y: {
-				label: 'Tiempo (minutos)'
+				label: 'Tiempo (minutos)',
+				padding: {bottom: 0},
+				min: 0
 			}
 		}
 	});
