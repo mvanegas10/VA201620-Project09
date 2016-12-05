@@ -319,6 +319,7 @@ function lineChart(dataX, dataY, dataZ, daySelected) {
 		},
 	});
 msgSelection.forEach(function (selected) {
+	console.log("Selecciona dia"+ selected);
 	chart.select('Tiempo promedio en s',msgSelection.map(function (d) {return d.x;}));
 });
 if (zoom !== undefined) chart.zoom(zoom);
@@ -412,7 +413,7 @@ function scatterplot(dataScatter) {
 				{
 					var prev=false;
 					table.forEach(function(i) {
-						if (i.name === d.name) prev = true;
+						if (i.id.localeCompare(d.id)===0) prev = true;
 					});
 
 					table = chart2.selected();
@@ -421,8 +422,9 @@ function scatterplot(dataScatter) {
 						var cant = 0;
 						table.forEach(function (selected,i) {
 							cant++;
-							if(selected.name === d.name) {
+							if(selected.id.localeCompare(d.id)===0) {
 								delete table[i];
+								chart2.unselect('['+table.map(function (d) {return d.name;})+']');
 								cant--;
 							}
 						});
@@ -471,13 +473,10 @@ function scatterplot(dataScatter) {
 	});
 
 	table.forEach(function (selected) {
-		chart2.select('['+msgSelection.map(function (d) {return d.name;})+']');
+		chart2.select('['+table.map(function (d) {return d.name;})+']');
 	});
 
-	function toggle(id) {
-	    chart.toggle(id);
-	}
-		$(".container").empty();
+	d3.select(".container").selectAll("*").remove();
 	d3.select('.container').insert('div', '.scatterplot').attr('class', 'legend').selectAll('div')
 	    .data(['Maximo', 'Minimo', 'Promedio'])
 	  .enter().append('div')
@@ -509,16 +508,24 @@ function scatterplot(dataScatter) {
 
 function pintarTabla()
 {
+	var tablafinal=[];
+	var tablaP=[];
+	table.forEach(function (d) {
+		if (tablaP[d.id] === undefined) {
+			console.log(d.id)
+			tablaP[d.id] = {};
+			tablafinal.push(d);
+		}
+	})
 	var data=[];
-	table.forEach(function(s){
+	tablafinal.forEach(function(s){
 		dataTable.forEach(function(d){
-			if(s.name.localeCompare(d.ticket_id)===0)
+			if(s.id.localeCompare(d.ticket_id)===0)
 			{
 				data.push(d);
 			}
 		})
 	})
-	console.log(data[0].ticket_id);
 	var tableTable = document.createElement("TABLE");
 		tableTable.border = "1";
 
@@ -569,18 +576,6 @@ function pintarTabla()
 
 			 dvTable.innerHTML = "";
 			 dvTable.appendChild(tableTable);
-
-
-
-
-
-
-
-
-
-
-
-	//USA DATA PARA PINTAR LA TABLA
 }
 
 function pintarTabla2(data)
