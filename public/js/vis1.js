@@ -11,9 +11,11 @@ var dataPromEstados = [];
 var timeTickets = [];
 var tiempoID=[];
 var avgTickets=[];
+var dataScatter=[];
 var avg = 0.0;
 var chart;
 var chart1;
+var table =[];
 var msgSelection = [];
 var zoom;
 //violin plot
@@ -86,7 +88,7 @@ socket.on(SHOW_TICKETS, function (data) {
 		}
 		tiempoID[d.ticket_id][d.current_state] = d.duration;
 	})
-	 var dataScatter=[];
+	 dataScatter=[];
 	 dataTickets.forEach(function (d) {
  		var def = [];
  		def.push(d);
@@ -118,7 +120,6 @@ socket.on(SHOW_STATE_AVG, function (data) {
 		dataEstados.forEach(function(s) {
 			if(d.current_state.localeCompare(s)===0)
 			{
-				console.log("Estado"+s);
 				def[0][d.current_state]=d.MaxTime;
 				def2.push(def[0][d.current_state])
 				def[1][d.current_state]=d.MinTime;
@@ -389,6 +390,49 @@ function scatterplot(dataScatter) {
 				Maximo: 'spline',
 				Minimo: 'spline',
 				Promedio:'spline'
+			},
+			selection: {
+				enabled: true,
+				multiple: true,
+				isselectable: function(d) {
+					return !(d.name === "Maximo");
+				}
+			},
+			onclick: function (d) {
+				if(d.name.localeCompare("Maximo")!=0&&d.name.localeCompare("Minimo")!=0&&d.name.localeCompare("Promedio")!=0)
+				{
+					var prev=false;
+					table.forEach(function(i) {
+						if (i.name === d.name) prev = true;
+					});
+
+					table = chart2.selected();
+
+					if (prev) {
+						var cant = 0;
+						table.forEach(function (selected,i) {
+							cant++;
+							if(selected.name === d.name) {
+								delete table[i];
+								cant--;
+							}
+						});
+						if(cant <= 0){
+							d3.select("#dvTable").html("");
+							d3.select("#dvTable").selectAll("*").remove();
+							table = [];
+						}
+						else
+						{
+							pintarTabla();
+							scatterplot(dataScatter);
+						}
+					}
+					else {
+						pintarTabla();
+						scatterplot(dataScatter);
+					}
+				}
 			}
 		},
 		legend:{
@@ -415,6 +459,10 @@ function scatterplot(dataScatter) {
 				min: 0
 			}
 		}
+	});
+
+	table.forEach(function (selected) {
+		chart2.select('['+msgSelection.map(function (d) {return d.name;})+']');
 	});
 
 	function toggle(id) {
@@ -446,6 +494,25 @@ function scatterplot(dataScatter) {
 			});
 }
 
+//--------------------------------
+//TABLA
+//---------------------------------
+
+function pintarTabla()
+{
+	var data=[];
+	table.forEach(function(s){
+		dataIncidentes.forEach(function(d){
+			if(s.name.localeCompare(d.ticket_id)===0)
+			{
+				data.push(d);
+			}
+		})
+	})
+	console.log(data);
+
+	//USA DATA PARA PINTAR LA TABLA
+}
 
 // ADDITIONAL FUNCTIONS
 
