@@ -23,7 +23,7 @@ var duracionEstado= [];
 var diaSemana =[];
 var tipoEstado = [];
 var cincoDiasSeleccionados = [];
-var dataTable=[]
+var dataTable=[];
 
 // ------------------------------------------------------
 // MANAGE CONNECTION WITH BACKEND
@@ -50,25 +50,22 @@ socket.on(SHOW_DATA, function (data) {
 	dataIncidentes = data;
 	socket.emit(GET_ESTADOS,getQueryString());
 });
-//timeState,type,datebegining,, ticket_id
+
 socket.on(INITIALIZE_DAYS_VIOLIN, function (data) {
 	console.log(":! This is a " + INITIALIZE_DAYS_VIOLIN + " request... DATOSTABLA");
 	dataTable = data;
 });
 
 socket.on(SHOW_ESTADOS, function (data) {
+	socket.emit(GET_STATE_AVG);
 	console.log(":! This is a " + SHOW_ESTADOS + " request...");
 	dataEstados = data.map(function (d) {return d.current_state;});
-	socket.emit(GET_STATE_AVG);
 })
 
 socket.on(SHOW_TICKETS, function (data) {
 	console.log(":! This is a " + SHOW_TICKETS + " request...");
 	dataTickets = data.map(function (d) {return d.ticket_id;});
 
-
-
-//stackedBarChart
 	dataIncidentes.forEach(function (d) {
 		if (timeTickets[d.current_state] === undefined) {
 			timeTickets[d.current_state] = {};
@@ -98,6 +95,8 @@ socket.on(SHOW_TICKETS, function (data) {
 		tiempoID[d.ticket_id][d.current_state] = d.duration;
 	})
 	 dataScatter=[];
+	console.log(data);
+
 	 dataTickets.forEach(function (d) {
  		var def = [];
  		def.push(d);
@@ -141,7 +140,8 @@ socket.on(SHOW_STATE_AVG, function (data) {
 	avgTickets.push(def2);
 	avgTickets.push(def3);
 	avgTickets.push(def4);
-		socket.emit(GET_TICKETS,getQueryString());
+	socket.emit(GET_TICKETS,getQueryString());
+	
 });
 
 // ------------------------------------------------------
@@ -386,6 +386,7 @@ function stackedBarChart(columnsData) {
 // visualizacion scatterplot
 function scatterplot(dataScatter) {
 	var columns = dataScatter.concat(avgTickets);
+	console.log(columns)
 	var chart2 = c3.generate({
 		size: {
 			height: 500,
@@ -569,17 +570,6 @@ function pintarTabla()
 
 			 dvTable.innerHTML = "";
 			 dvTable.appendChild(tableTable);
-
-
-
-
-
-
-
-
-
-
-
 	//USA DATA PARA PINTAR LA TABLA
 }
 
