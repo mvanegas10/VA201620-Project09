@@ -141,7 +141,7 @@ socket.on(SHOW_STATE_AVG, function (data) {
 	avgTickets.push(def3);
 	avgTickets.push(def4);
 	socket.emit(GET_TICKETS,getQueryString());
-	
+
 });
 
 // ------------------------------------------------------
@@ -577,23 +577,6 @@ function pintarTabla()
 
 			 dvTable.innerHTML = "";
 			 dvTable.appendChild(tableTable);
-<<<<<<< HEAD
-	//USA DATA PARA PINTAR LA TABLA
-||||||| merged common ancestors
-
-
-
-
-
-
-
-
-
-
-
-	//USA DATA PARA PINTAR LA TABLA
-=======
->>>>>>> origin/master
 }
 
 function pintarTabla2(data)

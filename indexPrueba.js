@@ -21,9 +21,9 @@ var clients = {};
 // Web server initialization...
 app.use(express.static(__dirname + '/public'));
 
-app.get('/', function(req, res) {
-    res.sendFile(__dirname + '/index.html');
-});
+//app.get('/', function(req, res) {
+  //  res.sendFile(__dirname + '/index.html');
+//});
 
 http.listen(port, function() {
     console.log('Server ready and listening on port: ' + port);
@@ -45,7 +45,7 @@ mongodb.MongoClient.connect(MONGODB_URI, function(err, database) {
   coll = db.collection('tickets');
 
   app.listen(3000);
-  //console.log('Listening on port 3000');
+
 });
 
 //----------------------------------------------------
@@ -104,6 +104,20 @@ function getData(socketId, table, msg) {
     docs.each(function(err, doc) {
       if(doc) {
         clients[socketId].emit(glbs.SHOW_DATA, doc);
+      }
+      else {
+
+      }
+    });
+  });
+}
+
+function getEstados(socketId, table, msg) {
+  coll.find({"current_state":1,"_id":0}, function(err, docs) {
+    docs.each(function(err, doc) {
+      if(doc) {
+        clients[socketId].emit(glbs.SHOW_DATA, doc);
+        console.log(doc);
       }
       else {
 
