@@ -33,7 +33,7 @@ var express = require('express');
 var mongodb = require('mongodb');
 var app = express();
 
-var MONGODB_URI = 'mongodb://visualAnalytics:visual20162@ds129038.mlab.com:29038/visualsnalitycs';
+var MONGODB_URI = 'mongodb://VisualDemo:Visual2016@ds127948.mlab.com:27948/pruebavisual';
 var db;
 var coll;
 
@@ -112,8 +112,31 @@ function getData(socketId, table, msg) {
   });
 }
 
+/* Funciones JavaScript
+
+si se quiere hacer un where de sql ejemplo where ticket_id = 44527 aca es ticket_id:44527
+ si se quieren las columnas (atributos) se especifican asi current_state:1 , si no se quiere se pone current_state:0
+ El primer {} se usa para hacer filtro y el segundo {} se utiliza para especifiar que columnas se quieren o cuales no. 
+ 
+ Ejemplos
+ 1.
+ En caso de no hacer un filtro (WHERE) pero especificar columnas es asi:
+ coll.find({},{ticket_id:1,current_state:1}) el anterior ejemplo da la columna ticket_id y current_state sin hacer ningun filtro
+ 2.
+ En caso de hacer un filtro y especificar que columnas es asi:
+ coll.find({ticket_id:77527,current_state:"CREADO"},{ticket_id:1,current_state:1})
+ 3.
+ En caso se no hacer filtro y no especificar que columnas es asi:
+ coll.find({ticket_id:77527,current_state:"CREADO"})
+
+ 
+ 
+*/
+
+
 function getEstados(socketId, table, msg) {
-  coll.find({"current_state":1,"_id":0}, function(err, docs) {
+
+  coll.find({},{"current_state":1,"_id":0}, function(err, docs) {
     docs.each(function(err, doc) {
       if(doc) {
         clients[socketId].emit(glbs.SHOW_DATA, doc);
