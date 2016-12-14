@@ -30,17 +30,19 @@ http.listen(port, function() {
     console.log('Server ready and listening on port: ' + port);
 });
 
-var config = {
-  user: 'Meili', //env var: PGUSER
-  database: 'va201620', //env var: PGDATABASE
-  password: '', //env var: PGPASSWORD
-  host: 'localhost', // Server hosting the postgres database
-  port: 5432, //env var: PGPORT
-  max: 10, // max number of clients in the pool
-  idleTimeoutMillis: 30000, // how long a client is allowed to remain idle before being closed
-};
+pg.defaults.ssl = true;
+pg.connect(process.env."https://data.heroku.com/datastore/7015c152-9c21-4c03-b62e-118d2a082dd0", function(err, client) {
+  if (err) throw err;
+  console.log('Connected to postgres! Getting schemas...');
 
-var pool = new pg.Pool(config);
+  client
+    .query('SELECT * FROM tickets;')
+    .on('row', function(row) {
+      console.log(JSON.stringify(row));
+    });
+});
+
+// var pool = new pg.Pool(config);
 // ------------------------------------------------------
 // Event Management
 // ------------------------------------------------------
