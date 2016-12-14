@@ -35,7 +35,7 @@ socket.emit(INITIALIZE_STATES_VIOLIN);
 socket.on(SHOW_DAYS, function (data) {
 	console.log(":! This is a " + SHOW_DAYS + " request...SHOW");
 	dataDays = data;
-	console.log(data)
+	console.log(data);
 	var dataX = ['x'];
 	dataDays.forEach(function (d,i) {
 		dataX.push((dataDays.length-1) - i);
