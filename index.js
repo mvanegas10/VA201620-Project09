@@ -33,17 +33,6 @@ http.listen(port, function() {
 
 var connectionString = "postgres://kxgjsphddjlktv:820455c3978dece3abad005c28935a34adb663478088950e804ebe1646b4a889@ec2-23-21-224-106.compute-1.amazonaws.com:5432/d4qeomd9ibd5u7"
 
-pg.connect(connectionString, function(err, client) {
-  if (err) throw err;
-  console.log('Connected to postgres! Getting schemas...');
-
-  client
-    .query('SELECT * FROM tickets;')
-    .on('row', function(row) {
-      console.log(JSON.stringify(row));
-    });
-});
-
 // var pool = new pg.Pool(config);
 // ------------------------------------------------------
 // Event Management
@@ -102,111 +91,174 @@ io.on('connection', function(socket) {
 // ------------------------------------------------------
 
 function getDays(socketId) {
-  pool.connect(function(err, client, done) {
-    if(err) {
-      return console.error('Error fetching client from pool', err);
-    }
-    var query = "SELECT date as day, AVG(duration) as duration, EXTRACT(dow from date) as weekday FROM tickets GROUP BY weekday,day ORDER BY day;";
-    client.query(query, function(err, result) {
-      done();
-
-      if(err) {
-        return console.error('Error running query ' + query, err);
-      }
-      else clients[socketId].emit(glbs.SHOW_DAYS, result.rows);
-    });
+  pg.connect(connectionString, function(err, client) {
+    if (err) throw err;
+    client
+      .query('SELECT date as day, AVG(duration) as duration, EXTRACT(dow from date) as weekday FROM tickets GROUP BY weekday,day ORDER BY day;')
+      .on('row', function(row) {
+        clients[socketId].emit(glbs.SHOW_DAYS, row);
+      });
   });
+
+  // pool.connect(function(err, client, done) {
+  //   if(err) {
+  //     return console.error('Error fetching client from pool', err);
+  //   }
+  //   var query = "SELECT date as day, AVG(duration) as duration, EXTRACT(dow from date) as weekday FROM tickets GROUP BY weekday,day ORDER BY day;";
+  //   client.query(query, function(err, result) {
+  //     done();
+
+  //     if(err) {
+  //       return console.error('Error running query ' + query, err);
+  //     }
+  //     else clients[socketId].emit(glbs.SHOW_DAYS, result.rows);
+  //   });
+  // });
 }
 
 function getData(socketId, table, msg) {
-  pool.connect(function(err, client, done) {
-    if(err) {
-      return console.error('Error fetching client from pool', err);
-    }
+  pg.connect(connectionString, function(err, client) {
+    if (err) throw err;
     var query = "SELECT * FROM " + table;
-    client.query(query, function(err, result) {
-      done();
-      console.log(query);
-
-      if(err) {
-        return console.error('Error running query ' + query, err);
-      }
-      else clients[socketId].emit(glbs.SHOW_DATA, result.rows);
-    });
+    client
+      .query(query)
+      .on('row', function(row) {
+        clients[socketId].emit(glbs.SHOW_DATA, row);
+      });
   });
+
+  // pool.connect(function(err, client, done) {
+  //   if(err) {
+  //     return console.error('Error fetching client from pool', err);
+  //   }
+  //   var query = "SELECT * FROM " + table;
+  //   client.query(query, function(err, result) {
+  //     done();
+  //     console.log(query);
+
+  //     if(err) {
+  //       return console.error('Error running query ' + query, err);
+  //     }
+  //     else clients[socketId].emit(glbs.SHOW_DATA, result.rows);
+  //   });
+  // });
 }
 
 function getEstados(socketId, table,msg) {
-  pool.connect(function(err, client, done) {
-    if(err) {
-      return console.error('Error fetching client from pool', err);
-    }
+  pg.connect(connectionString, function(err, client) {
+    if (err) throw err;
     var query;
     if (msg == null || msg === undefined || msg == "") query = "SELECT current_state FROM " + table + " GROUP BY current_state";
     else query = "SELECT current_state FROM " + table + " WHERE " + msg + " GROUP BY current_state";
-    client.query(query, function(err, result) {
-      done();
-      console.log(query);
-      if(err) {
-        return console.error('Error running query ' + query, err);
-      }
-      else clients[socketId].emit(glbs.SHOW_ESTADOS, result.rows);
-    });
+    client
+      .query(query)
+      .on('row', function(row) {
+        clients[socketId].emit(glbs.SHOW_ESTADOS, row);
+      });
   });
+
+  // pool.connect(function(err, client, done) {
+  //   if(err) {
+  //     return console.error('Error fetching client from pool', err);
+  //   }
+  //   var query;
+  //   if (msg == null || msg === undefined || msg == "") query = "SELECT current_state FROM " + table + " GROUP BY current_state";
+  //   else query = "SELECT current_state FROM " + table + " WHERE " + msg + " GROUP BY current_state";
+  //   client.query(query, function(err, result) {
+  //     done();
+  //     console.log(query);
+  //     if(err) {
+  //       return console.error('Error running query ' + query, err);
+  //     }
+  //     else clients[socketId].emit(glbs.SHOW_ESTADOS, result.rows);
+  //   });
+  // });
 }
 
 function getTickets(socketId, table,msg) {
-  pool.connect(function(err, client, done) {
-    if(err) {
-      return console.error('Error fetching client from pool', err);
-    }    
+  pg.connect(connectionString, function(err, client) {
+    if (err) throw err;
     var query;
     if (msg == null || msg === undefined || msg == "") query = "SELECT ticket_id FROM " + table + " GROUP BY ticket_id ";
     else query = "SELECT ticket_id FROM " + table + " WHERE " + msg + "  GROUP BY ticket_id ";
-    client.query(query, function(err, result) {
-      done();
-      console.log(query);
-
-      if(err) {
-        return console.error('Error running query ' + query, err);
-      }    
-      else clients[socketId].emit(glbs.SHOW_TICKETS, result.rows);
-    });
+    client
+      .query(query)
+      .on('row', function(row) {
+        clients[socketId].emit(glbs.SHOW_TICKETS, row);
+      });
   });
+
+  // pool.connect(function(err, client, done) {
+  //   if(err) {
+  //     return console.error('Error fetching client from pool', err);
+  //   }    
+  //   var query;
+  //   if (msg == null || msg === undefined || msg == "") query = "SELECT ticket_id FROM " + table + " GROUP BY ticket_id ";
+  //   else query = "SELECT ticket_id FROM " + table + " WHERE " + msg + "  GROUP BY ticket_id ";
+  //   client.query(query, function(err, result) {
+  //     done();
+  //     console.log(query);
+
+  //     if(err) {
+  //       return console.error('Error running query ' + query, err);
+  //     }    
+  //     else clients[socketId].emit(glbs.SHOW_TICKETS, result.rows);
+  //   });
+  // });
 }
 
 function getStateAverage(socketId, msg) {
-  pool.connect(function(err, client, done) {
-    if(err) {
-      return console.error('Error fetching client from pool', err);
-    }
+  pg.connect(connectionString, function(err, client) {
+    if (err) throw err;
     var query = "SELECT current_state, max(EXTRACT(EPOCH FROM time_finish_current-time_begin_current)/216000)as MaxTime,min(EXTRACT(EPOCH FROM time_finish_current-time_begin_current)/216000)as MinTime,avg(EXTRACT(EPOCH FROM time_finish_current-time_begin_current)/216000)as avgTime FROM tickets group by current_state;" ;
-    client.query(query, function(err, result) {
-      done();
-      console.log(query);
-
-      if(err) {
-        return console.error('Error running query ' + query, err);
-      }
-      else clients[socketId].emit(glbs.SHOW_STATE_AVG, result.rows);
-    });
+    client
+      .query(query)
+      .on('row', function(row) {
+        clients[socketId].emit(glbs.SHOW_STATE_AVG, row);
+      });
   });
+
+  // pool.connect(function(err, client, done) {
+  //   if(err) {
+  //     return console.error('Error fetching client from pool', err);
+  //   }
+  //   var query = "SELECT current_state, max(EXTRACT(EPOCH FROM time_finish_current-time_begin_current)/216000)as MaxTime,min(EXTRACT(EPOCH FROM time_finish_current-time_begin_current)/216000)as MinTime,avg(EXTRACT(EPOCH FROM time_finish_current-time_begin_current)/216000)as avgTime FROM tickets group by current_state;" ;
+  //   client.query(query, function(err, result) {
+  //     done();
+  //     console.log(query);
+
+  //     if(err) {
+  //       return console.error('Error running query ' + query, err);
+  //     }
+  //     else clients[socketId].emit(glbs.SHOW_STATE_AVG, result.rows);
+  //   });
+  // });
 }
 
 function getStateAverageTable(socketId) {
-  pool.connect(function(err, client, done) {
-    if(err) {
-      return console.error('Error fetching client from pool', err);
-    }
+  pg.connect(connectionString, function(err, client) {
+    if (err) throw err;
     var query = "SELECT ticket_id,current_state,time_begin_current,ticket_typo, EXTRACT(EPOCH FROM time_finish_current-time_begin_current)/216000 as timeState FROM tickets;" ;
-    client.query(query, function(err, result) {
-      done();
-      console.log(query);
-
-      if(err) {
-        return console.error('Error running query ' + query, err);
-      }
-      else clients[socketId].emit(glbs.INITIALIZE_DAYS_VIOLIN, result.rows);
-    });
+    client
+      .query(query)
+      .on('row', function(row) {
+        clients[socketId].emit(glbs.INITIALIZE_DAYS_VIOLIN, row);
+      });
   });
+  
+  // pool.connect(function(err, client, done) {
+  //   if(err) {
+  //     return console.error('Error fetching client from pool', err);
+  //   }
+  //   var query = "SELECT ticket_id,current_state,time_begin_current,ticket_typo, EXTRACT(EPOCH FROM time_finish_current-time_begin_current)/216000 as timeState FROM tickets;" ;
+  //   client.query(query, function(err, result) {
+  //     done();
+  //     console.log(query);
+
+  //     if(err) {
+  //       return console.error('Error running query ' + query, err);
+  //     }
+  //     else clients[socketId].emit(glbs.INITIALIZE_DAYS_VIOLIN, result.rows);
+  //   });
+  // });
 }
