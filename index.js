@@ -7,6 +7,7 @@ var http = require('http').Server(app);
 var express = require('express');
 
 var pg = require('pg');
+pg.defaults.ssl = true;
 
 var io = require('socket.io')(http);
 var fs = require('fs');
@@ -30,8 +31,9 @@ http.listen(port, function() {
     console.log('Server ready and listening on port: ' + port);
 });
 
-pg.defaults.ssl = true;
-pg.connect(process.env."https://data.heroku.com/datastore/7015c152-9c21-4c03-b62e-118d2a082dd0", function(err, client) {
+var connectionString = "postgres://kxgjsphddjlktv:820455c3978dece3abad005c28935a34adb663478088950e804ebe1646b4a889@ec2-23-21-224-106.compute-1.amazonaws.com:5432/d4qeomd9ibd5u7"
+
+pg.connect(connectionString, function(err, client) {
   if (err) throw err;
   console.log('Connected to postgres! Getting schemas...');
 
