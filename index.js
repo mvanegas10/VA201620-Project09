@@ -18,7 +18,7 @@ var port = 8080;
 // Variables
 // ------------------------------------------------------
 
-var clientSIO;
+var clients = {};
 
 // Web server initialization...
 app.use(express.static(__dirname + '/public'));
@@ -27,7 +27,9 @@ app.get('/', function(req, res) {
     res.sendFile(__dirname + '/index.html');
 });
 
-http.listen(process.env.PORT || 5000);
+http.listen(port, function() { // Setting ip the server port...
+    console.log('Server ready and listening on port: ' + port);
+});
 
 var connectionString = "postgres://kxgjsphddjlktv:820455c3978dece3abad005c28935a34adb663478088950e804ebe1646b4a889@ec2-23-21-224-106.compute-1.amazonaws.com:5432/d4qeomd9ibd5u7";
 // ------------------------------------------------------
@@ -37,14 +39,14 @@ var connectionString = "postgres://kxgjsphddjlktv:820455c3978dece3abad005c28935a
 io.on('connection', function(socket) {
     console.log(': Socket connection from client ' + socket.id);
 
-    if (!clientSIO) {
+    if (!clients[socket.id]) {
         console.log(':! This is a new connection request... ');
-        clientSIO = socket;
+        clients[socket.id] = socket;
     }
     
     socket.on('disconnect', function() {
         console.log(':! This is a disconnection request...');
-        clientSIO = undefined;
+        delete clients[socket.id];
     });
 
     socket.on(glbs.INITIALIZE_DAYS, function(msg) {
@@ -95,7 +97,7 @@ function getDays(socketId) {
 
     done.on("end", function (result) {          
       client.end();
-      clientSIO.emit(glbs.SHOW_DAYS, result.rows);
+      clients[socketId].emit(glbs.SHOW_DAYS, result.rows);
     });    
   });
 }
@@ -112,7 +114,7 @@ function getData(socketId, table, msg) {
     
     done.on("end", function (result) {          
       client.end();
-      clientSIO.emit(glbs.SHOW_DATA, result.rows);
+      clients[socketId].emit(glbs.SHOW_DATA, result.rows);
     }); 
 
   });
@@ -129,7 +131,7 @@ function getEstados(socketId, table,msg) {
     
     done.on("end", function (result) {          
       client.end();
-      clientSIO.emit(glbs.SHOW_ESTADOS, result.rows);
+      clients[socketId].emit(glbs.SHOW_ESTADOS, result.rows);
     });       
   });
 }
@@ -145,7 +147,7 @@ function getTickets(socketId, table,msg) {
 
     done.on("end", function (result) {          
       client.end();
-      clientSIO.emit(glbs.SHOW_TICKETS, result.rows);
+      clients[socketId].emit(glbs.SHOW_TICKETS, result.rows);
     });     
 
   });
@@ -160,7 +162,7 @@ function getStateAverage(socketId, msg) {
     
     done.on("end", function (result) {          
       client.end();
-      clientSIO.emit(glbs.SHOW_STATE_AVG, result.rows);
+      clients[socketId].emit(glbs.SHOW_STATE_AVG, result.rows);
     }); 
 
   });
@@ -177,7 +179,7 @@ function getAverage(socketId, msg) {
 
     done.on("end", function (result) {          
       client.end();
-      clientSIO.emit(glbs.SHOW_AVG, result.rows);
+      clients[socketId].emit(glbs.SHOW_AVG, result.rows);
     });     
   });
 }
@@ -191,7 +193,7 @@ function getStateAverageTable(socketId) {
 
     done.on("end", function (result) {          
       client.end();
-      clientSIO.emit(glbs.INITIALIZE_DAYS_VIOLIN, result.rows);
+      clients[socketId].emit(glbs.INITIALIZE_DAYS_VIOLIN, result.rows);
     });     
   });
 }
