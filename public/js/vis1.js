@@ -29,13 +29,13 @@ var dataTable=[];
 // MANAGE CONNECTION WITH BACKEND
 // ------------------------------------------------------
 
+socket.emit(GET_AVG);
 socket.emit(INITIALIZE_DAYS);
 socket.emit(INITIALIZE_STACKED,"");
 socket.emit(INITIALIZE_STATES_VIOLIN);
 socket.on(SHOW_DAYS, function (data) {
-	console.log(":! This is a " + SHOW_DAYS + " request...SHOW");
+	console.log(":! This is a " + SHOW_DAYS + " request...");
 	dataDays = data;
-	console.log(data);
 	var dataX = ['x'];
 	dataDays.forEach(function (d,i) {
 		dataX.push((dataDays.length-1) - i);
@@ -48,20 +48,25 @@ socket.on(SHOW_DAYS, function (data) {
 
 socket.on(SHOW_DATA, function (data) {
 	console.log(":! This is a " + SHOW_DATA + " request...");
-	console.log(data);
 	dataIncidentes = data;
 	socket.emit(GET_ESTADOS,getQueryString());
 });
 
 socket.on(INITIALIZE_DAYS_VIOLIN, function (data) {
-	console.log(":! This is a " + INITIALIZE_DAYS_VIOLIN + " request... DATOSTABLA");
+	console.log(":! This is a " + INITIALIZE_DAYS_VIOLIN + " request... ");
 	dataTable = data;
+});
+
+socket.on(SHOW_AVG, function (data) {
+	console.log(":! This is a " + INITIALIZE_DAYS_VIOLIN + " request... ");
+	avg = data[0].avg;
 });
 
 socket.on(SHOW_ESTADOS, function (data) {
 	socket.emit(GET_STATE_AVG);
 	console.log(":! This is a " + SHOW_ESTADOS + " request...");
 	dataEstados = data.map(function (d) {return d.current_state;});
+	socket.emit(GET_TICKETS, getQueryString());
 })
 
 socket.on(SHOW_TICKETS, function (data) {
@@ -87,6 +92,7 @@ socket.on(SHOW_TICKETS, function (data) {
 		})
 		dataFinal.push(nums);
 	})
+	console.log(dataFinal)
 	stackedBarChart(dataFinal);
 
 	//scatterplot
@@ -152,6 +158,7 @@ socket.on(SHOW_STATE_AVG, function (data) {
 function lineChart(dataX, dataY, dataZ, daySelected) {
 	var dataAVG = Array.apply(null, Array(dataY.length)).map(Number.prototype.valueOf,Number(avg));
 	dataAVG.unshift("promedio");
+
 	var arr = dataY.slice(0);
 	arr.splice(0,1);
 	arr = arr.map(Number);
@@ -227,15 +234,17 @@ function lineChart(dataX, dataY, dataZ, daySelected) {
 					}
 					if (d.x === daySelected) {
 						lineChart(dataX,dataY,dataZ);
+						socket.emit(GET_AVG,getNecesaryWeekday());
 						socket.emit(INITIALIZE_STACKED,getQueryString());
-
 					}
 					else {
 						lineChart(dataX,dataY,dataZ,daySelected);
+						socket.emit(GET_AVG,getNecesaryWeekday());
 						socket.emit(INITIALIZE_STACKED,getQueryString());
 					}
 				}
 				else {
+					socket.emit(GET_AVG,getNecesaryWeekday());
 					socket.emit(INITIALIZE_STACKED,getQueryString());
 					lineChart(dataX,dataY,dataZ,d.x);
 				}
@@ -320,11 +329,10 @@ function lineChart(dataX, dataY, dataZ, daySelected) {
 			show: false,
 		},
 	});
-msgSelection.forEach(function (selected) {
-	console.log("Selecciona dia"+ selected);
-	chart.select('Tiempo promedio en s',msgSelection.map(function (d) {return d.x;}));
-});
-if (zoom !== undefined) chart.zoom(zoom);
+	msgSelection.forEach(function (selected) {
+		chart.select('Tiempo promedio en s',msgSelection.map(function (d) {return d.x;}));
+	});
+	if (zoom !== undefined) chart.zoom(zoom);
 }
 
 // ------------------------------------------------------
@@ -389,7 +397,6 @@ function stackedBarChart(columnsData) {
 // visualizacion scatterplot
 function scatterplot(dataScatter) {
 	var columns = dataScatter.concat(avgTickets);
-	console.log(columns)
 	var chart2 = c3.generate({
 		size: {
 			height: 500,
@@ -515,7 +522,6 @@ function pintarTabla()
 	var tablaP=[];
 	table.forEach(function (d) {
 		if (tablaP[d.id] === undefined) {
-			console.log(d.id)
 			tablaP[d.id] = {};
 			tablafinal.push(d);
 		}

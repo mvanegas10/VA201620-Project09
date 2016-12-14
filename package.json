@@ -2,7 +2,7 @@
   "name": "va201620",
   "version": "1.0.0",
   "description": "Visual Analytics Project",
-  "main": "indexPrueba.js",
+  "main": "index.js",
   "directories": {
     "doc": "docs"
   },
