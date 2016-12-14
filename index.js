@@ -102,7 +102,7 @@ function getDays(socketId) {
     if(err) {
       return console.error('Error fetching client from pool', err);
     }
-    var query = "SELECT DATE(time_finish_current) as day, AVG(duration) as duration, EXTRACT(dow from time_finish_current) as weekday FROM tickets GROUP BY day, weekday ORDER BY day;";
+    var query = "SELECT date as day, AVG(duration) as duration, EXTRACT(dow from date) as weekday FROM tickets GROUP BY weekday,day ORDER BY day;";
     client.query(query, function(err, result) {
       done();
 

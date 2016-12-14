@@ -21,9 +21,9 @@ var clients = {};
 // Web server initialization...
 app.use(express.static(__dirname + '/public'));
 
-//app.get('/', function(req, res) {
-  //  res.sendFile(__dirname + '/index.html');
-//});
+app.get('/', function(req, res) {
+   res.sendFile(__dirname + '/index.html');
+});
 
 http.listen(port, function() {
     console.log('Server ready and listening on port: ' + port);
@@ -42,8 +42,8 @@ mongodb.MongoClient.connect(MONGODB_URI, function(err, database) {
 
   if(err) throw err;
   db = database;
-  coll = db.collection('tickets');
-
+  coll = db.collection('tickets_v2');
+  console.log(coll);
   app.listen(3000);
 
 });
@@ -63,7 +63,6 @@ io.on('connection', function(socket) {
 
     socket.on(glbs.INITIALIZE_DAYS, function(msg) {
         console.log(':! This is a ' + glbs.INITIALIZE + ' request...DIASINI' )
-        console.log()
         getDays(socket.id);
     });
     socket.on(glbs.INITIALIZE_STACKED, function(msg) {
@@ -72,8 +71,7 @@ io.on('connection', function(socket) {
     });
     socket.on(glbs.INITIALIZE_STATES_VIOLIN, function(msg) {
         console.log(':! This is a ' + glbs.INITIALIZE_STATES_VIOLIN + ' request...AVERAGE_STATE' )
-        console.log()
-        getStateAverageTable(socket.id);
+        // getStateAverageTable(socket.id);
     });
 
     socket.on(glbs.GET_ESTADOS, function(msg) {
@@ -83,12 +81,12 @@ io.on('connection', function(socket) {
 
     socket.on(glbs.GET_TICKETS, function(msg) {
         console.log(':! This is a ' + glbs.GET_TICKETS + ' request... TIQUETES')
-        getTickets(socket.id, 'tickets', msg);
+        // getTickets(socket.id, 'tickets', msg);
     });
 
     socket.on(glbs.GET_STATE_AVG, function(msg) {
         console.log(':! This is a ' + glbs.GET_STATE_AVG + ' request...AVERAGE ESTADOS')
-        getStateAverage(socket.id);
+        // getStateAverage(socket.id);
     });
 });
 
@@ -101,14 +99,7 @@ function getDays(socketId) {
 }
 function getData(socketId, table, msg) {
   coll.find({}, function(err, docs) {
-    docs.each(function(err, doc) {
-      if(doc) {
-        clients[socketId].emit(glbs.SHOW_DATA, doc);
-      }
-      else {
-
-      }
-    });
+    clients[socketId].emit(glbs.SHOW_DATA, docs.map(function (d) {return d.id;}));
   });
 }
 
@@ -141,9 +132,6 @@ function getEstados(socketId, table, msg) {
       if(doc) {
         clients[socketId].emit(glbs.SHOW_DATA, doc);
         console.log(doc);
-      }
-      else {
-
       }
     });
   });
