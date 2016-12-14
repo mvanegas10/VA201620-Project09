@@ -27,9 +27,7 @@ app.get('/', function(req, res) {
     res.sendFile(__dirname + '/index.html');
 });
 
-http.listen(port, function() {
-    console.log('Server ready and listening on port: ' + port);
-});
+http.listen(process.env.PORT || 5000);
 
 var connectionString = "postgres://kxgjsphddjlktv:820455c3978dece3abad005c28935a34adb663478088950e804ebe1646b4a889@ec2-23-21-224-106.compute-1.amazonaws.com:5432/d4qeomd9ibd5u7";
 // ------------------------------------------------------
